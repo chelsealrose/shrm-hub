@@ -6,7 +6,7 @@
 <title>Cleveland SHRM — Event Planning Tool</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+ 
   :root {
     --blue: #185FA5;
     --blue-light: #E6F1FB;
@@ -31,7 +31,7 @@
     --radius-md: 8px;
     --radius-lg: 12px;
   }
-
+ 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: #f0f2f5;
@@ -39,12 +39,12 @@
     min-height: 100vh;
     padding: 20px 12px 60px;
   }
-
+ 
   .w { max-width: 680px; margin: 0 auto; }
-
+ 
   h2 { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
   .sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
-
+ 
   .step-pill {
     display: inline-block; font-size: 11px; font-weight: 600;
     padding: 3px 10px; border-radius: 99px;
@@ -55,9 +55,9 @@
     padding: 3px 10px; border-radius: 99px;
     background: var(--green-light); color: var(--green); margin-bottom: 10px;
   }
-
+ 
   label { font-size: 13px; font-weight: 600; color: var(--text); display: block; margin-bottom: 5px; }
-
+ 
   input[type=text], input[type=email], input[type=number], input[type=date], input[type=time], textarea {
     width: 100%; padding: 8px 10px; font-size: 14px;
     border: 1px solid var(--border-strong); border-radius: var(--radius-md);
@@ -67,13 +67,13 @@
   }
   input:focus, textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,95,165,.12); }
   textarea { resize: vertical; min-height: 70px; }
-
+ 
   .field { margin-bottom: 14px; }
   .field label { margin-bottom: 5px; }
   .field input, .field textarea { margin-bottom: 0; }
-
+ 
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
-
+ 
   .radio-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
   .radio-btn {
     padding: 7px 14px; font-size: 13px; border-radius: 99px;
@@ -83,7 +83,7 @@
   }
   .radio-btn:hover { border-color: var(--blue); color: var(--blue); }
   .radio-btn.sel { background: var(--blue); border-color: var(--blue); color: #fff; }
-
+ 
   .check-item {
     display: flex; align-items: center; gap: 9px; padding: 8px 12px;
     border: 1px solid var(--border); border-radius: var(--radius-md);
@@ -101,7 +101,7 @@
   .chk svg { display: none; }
   .check-item.sel .chk svg { display: block; }
   .check-label { font-size: 13px; color: var(--text); }
-
+ 
   .card {
     background: var(--bg); border: 1px solid var(--border);
     border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1rem;
@@ -111,12 +111,12 @@
     font-size: 15px; font-weight: 600; color: var(--text);
     margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
   }
-
+ 
   .warn-box { background: var(--amber-light); border-left: 3px solid #EF9F27; border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--amber-dark); margin-bottom: 14px; line-height: 1.5; }
   .danger-box { background: var(--red-light); border-left: 3px solid #E24B4A; border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--red-dark); margin-bottom: 14px; line-height: 1.5; }
   .success-box { background: var(--green-light); border-left: 3px solid #639922; border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--green); margin-bottom: 14px; line-height: 1.5; }
   .info-box { background: var(--blue-light); border-left: 3px solid var(--blue); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--blue-dark); margin-bottom: 14px; line-height: 1.5; }
-
+ 
   .sheet-link {
     display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
     color: var(--blue); text-decoration: none; padding: 6px 12px;
@@ -125,13 +125,13 @@
     transition: background .15s;
   }
   .sheet-link:hover { background: var(--blue-mid); }
-
+ 
   .nav {
     display: flex; justify-content: space-between; align-items: center;
     margin-top: 1.5rem; padding-top: 1rem;
     border-top: 1px solid var(--border);
   }
-
+ 
   .btn {
     padding: 9px 22px; font-size: 14px; border-radius: var(--radius-md);
     border: 1px solid var(--border-strong); cursor: pointer;
@@ -145,43 +145,43 @@
   .btn-green:hover { background: #27500A; }
   .btn-sm { padding: 6px 14px; font-size: 13px; }
   .btn:disabled { opacity: .4; cursor: default; }
-
+ 
   .prog { display: flex; gap: 4px; margin-bottom: 1.5rem; }
   .prog-dot { height: 4px; flex: 1; border-radius: 99px; background: var(--border); transition: background .3s; }
   .prog-dot.done { background: var(--blue); }
   .prog-dot.active { background: #378ADD; }
-
+ 
   .sum-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 10px; margin: 14px 0; }
   .sum-card { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 14px 10px; text-align: center; }
   .sum-num { font-size: 22px; font-weight: 600; color: var(--blue); }
   .sum-label { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
-
+ 
   .price-table { width: 100%; font-size: 13px; border-collapse: collapse; margin: 10px 0; }
   .price-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
   .price-table td:last-child { text-align: right; font-weight: 600; }
   .price-table tr.total-row td { border-bottom: none; font-weight: 600; font-size: 14px; border-top: 1px solid var(--border-strong); padding-top: 10px; }
-
+ 
   .email-preview {
     background: var(--bg-secondary); border: 1px solid var(--border);
     border-radius: var(--radius-md); padding: 12px; font-size: 13px;
     color: var(--text); margin-bottom: 10px; line-height: 1.6;
     white-space: pre-wrap; word-break: break-word;
   }
-
+ 
   .tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-left: 4px; }
   .tag-blue { background: var(--blue-light); color: var(--blue); }
   .tag-amber { background: var(--amber-light); color: var(--amber-dark); }
   .tag-red { background: var(--red-light); color: var(--red-dark); }
   .tag-green { background: var(--green-light); color: var(--green); }
   .tag-purple { background: var(--purple-light); color: var(--purple-dark); }
-
+ 
   hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
-
+ 
   .sponsor-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; position: relative; }
   .sponsor-num { font-size: 11px; font-weight: 600; color: var(--blue); margin-bottom: 8px; }
   .sponsor-remove { position: absolute; top: 10px; right: 10px; font-size: 12px; color: var(--text-secondary); cursor: pointer; padding: 2px 8px; border: 1px solid var(--border); border-radius: 99px; background: var(--bg); }
   .sponsor-remove:hover { background: var(--red-light); color: var(--red-dark); border-color: #F09595; }
-
+ 
   .session-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; }
   .session-header { display: flex; align-items: center; gap: 9px; cursor: pointer; }
   .session-header.open { margin-bottom: 10px; }
@@ -189,7 +189,7 @@
   .session-mins { font-size: 12px; color: var(--text-secondary); margin-left: auto; padding-right: 8px; }
   .session-times { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .session-times input { margin-bottom: 0; }
-
+ 
   .total-bar {
     background: var(--blue-light); border: 1px solid var(--blue-mid);
     border-radius: var(--radius-md); padding: 10px 14px;
@@ -197,7 +197,7 @@
   }
   .total-bar-label { font-size: 13px; color: var(--blue-dark); }
   .total-bar-val { font-size: 15px; font-weight: 600; color: var(--blue); }
-
+ 
   /* Entry screen */
   .entry-wrap { padding: 2rem 0 1rem; }
   .entry-logo { font-size: 13px; font-weight: 700; letter-spacing: .5px; color: var(--blue); text-transform: uppercase; margin-bottom: 1.5rem; }
@@ -214,7 +214,7 @@
   .path-icon { font-size: 28px; margin-bottom: 10px; }
   .path-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
   .path-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
-
+ 
   @media (max-width: 480px) {
     .path-grid { grid-template-columns: 1fr; }
     .row2 { grid-template-columns: 1fr; }
@@ -227,15 +227,15 @@
 <div class="w">
   <div id="app"></div>
 </div>
-
+ 
 <script>
 // ── STATE ─────────────────────────────────────────────────────────────────
 let mode = '', step = 0;
-
+ 
 let std = { creatorName:'', creatorEmail:'', eventTitle:'', eventDate:'', eventAmPm:'am', eventType:'', programCalChecked:false };
-
+ 
 const SESSION_ITEMS = ['Program/presentation','Q&A','Check-in & networking','Other (optional)'];
-
+ 
 let d = {
   creatorName:'', creatorEmail:'', eventType:'',
   eventTitle:'', eventDate:'', eventAmPm:'am', programCalChecked:false,
@@ -249,16 +249,16 @@ let d = {
   estimatedAttendance:'',
   hasSponsors:'', sponsorCoordEmail:'', sponsors:[]
 };
-
+ 
 SESSION_ITEMS.forEach(s => { d.sessionBlocks[s] = { enabled:false, startTime:'', endTime:'' }; });
-
+ 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 const app = () => document.getElementById('app');
-
+ 
 function ckSvg() {
   return `<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
-
+ 
 function set(key, val) { d[key] = val; }
 function setStd(key, val) { std[key] = val; }
 function toggleCheck(key) { d[key] = !d[key]; render(); }
@@ -266,10 +266,10 @@ function toggleCheckStd(key) { std[key] = !std[key]; render(); }
 function addSponsor() { d.sponsors.push({company:'',contactName:'',contactEmail:'',sponsoring:''}); render(); }
 function removeSponsor(i) { d.sponsors.splice(i,1); render(); }
 function setSponsor(i, key, val) { d.sponsors[i][key] = val; }
-
+ 
 function toggleSession(name) { d.sessionBlocks[name].enabled = !d.sessionBlocks[name].enabled; render(); }
 function setSession(name, key, val) { d.sessionBlocks[name][key] = val; updateTotalBar(); }
-
+ 
 function timeToMins(t) { if (!t) return 0; const [h,m] = t.split(':').map(Number); return h*60+(m||0); }
 function minsToStr(m) {
   if (m <= 0) return '—';
@@ -285,16 +285,16 @@ function calcTotalMins() {
   return total;
 }
 function updateTotalBar() { const el = document.getElementById('total-length'); if (el) el.textContent = minsToStr(calcTotalMins()); }
-
+ 
 function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
 function fmt2(n) { return '$' + (Math.round(n*100)/100).toFixed(2); }
-
+ 
 function copyText(txt) {
   navigator.clipboard.writeText(txt)
     .then(() => alert('Copied to clipboard!'))
     .catch(() => alert('Please select and copy the text manually.'));
 }
-
+ 
 function radioGroup(key, options, obj) {
   obj = obj || d;
   const fn = obj === std ? 'setStd' : 'set';
@@ -302,15 +302,15 @@ function radioGroup(key, options, obj) {
     `<div class="radio-btn${obj[key]===o?' sel':''}" onclick="${fn}('${key}','${o}');render()">${o}</div>`
   ).join('')}</div>`;
 }
-
+ 
 function inp(key, ph, type, extra, obj) {
   type = type||'text'; extra = extra||''; obj = obj||d;
   const fn = obj === std ? 'setStd' : 'set';
   return `<input type="${type}" placeholder="${ph||''}" value="${(obj[key]||'').toString().replace(/"/g,'&quot;')}" oninput="${fn}('${key}',this.value)"${extra?' '+extra:''}>`;
 }
-
+ 
 function ta(key, ph) { return `<textarea placeholder="${ph||''}" oninput="set('${key}',this.value)">${d[key]||''}</textarea>`; }
-
+ 
 function calcCosts() {
   const att = parseInt(d.estimatedAttendance)||0;
   const food = parseFloat(d.foodCostPer)||0;
@@ -323,25 +323,25 @@ function calcCosts() {
   const projRevenue = att > 0 ? (0.75*att*memberPrice + 0.25*att*nonMemberPrice) : 0;
   return { att, food, venue, spkFee, totalCost, nonMemberPrice, memberPrice, projRevenue };
 }
-
+ 
 function go(dir) { step = Math.max(0, Math.min(8, step+dir)); render(); scrollTop(); }
 function scrollTop() { document.querySelector('.w').scrollIntoView({behavior:'smooth'}); }
 function startMode(m) { mode = m; step = 0; render(); scrollTop(); }
 function restart() { mode = ''; step = 0; render(); scrollTop(); }
-
+ 
 function prog() {
   return `<div class="prog">${Array.from({length:9},(_,i) =>
     `<div class="prog-dot${i<step?' done':i===step?' active':''}"></div>`
   ).join('')}</div>`;
 }
-
+ 
 function eNav(nextLabel) {
   return `<div class="nav">
     <button class="btn btn-ghost" onclick="${step===0?'restart()':'go(-1)'}">${step===0?'Back to start':'Back'}</button>
     <button class="btn btn-primary" onclick="go(1)">${nextLabel||'Next'}</button>
   </div>`;
 }
-
+ 
 // ── ENTRY ─────────────────────────────────────────────────────────────────
 function renderEntry() {
   return `<div class="entry-wrap">
@@ -362,10 +362,10 @@ function renderEntry() {
     </div>
   </div>`;
 }
-
+ 
 // ── SAVE THE DATE ─────────────────────────────────────────────────────────
 function renderStd() { if (step===0) return stdStep0(); return stdDone(); }
-
+ 
 function stdStep0() {
   const calOk = std.programCalChecked;
   return `<div class="std-pill">Save the date</div>
@@ -393,25 +393,25 @@ function stdStep0() {
   <button class="btn btn-green" onclick="step=1;render();scrollTop()">Generate save the date</button>
 </div>`;
 }
-
+ 
 function stdDone() {
   const body = `Subject: Save the date — ${std.eventTitle||'[Event Title]'}
-
+ 
 Hi [Name],
-
+ 
 Please save the date for an upcoming Cleveland SHRM event!
-
+ 
 Event: ${std.eventTitle||'[Event Title]'}
 Date: ${std.eventDate||'[Date]'}
 Time: ${std.eventAmPm||''}
 Format: ${std.eventType||'[Virtual / In-person]'}
-
+ 
 More details including registration, location, and agenda will follow soon.
-
+ 
 ${std.creatorName||'[Your Name]'}
 ${std.creatorEmail||''}
 Cleveland SHRM Chapter`;
-
+ 
   return `<div class="std-pill">Save the date — complete</div>
 <h2>Ready to send!</h2>
 <p class="sub">Copy the email text below and send it to your list.</p>
@@ -437,13 +437,13 @@ Cleveland SHRM Chapter`;
   <button class="btn btn-primary" onclick="restart()">Plan a new event</button>
 </div>`;
 }
-
+ 
 // ── EVENT STEPS ───────────────────────────────────────────────────────────
 function renderEvent() {
   const views = [eS0,eS1,eS2,eS3,eS4,eS5,eS6,eS7,eS8];
   return prog() + views[Math.min(step,8)]();
 }
-
+ 
 function eS0() {
   return `<div class="step-pill">Step 1 of 9 — Event basics</div>
 <h2>Let's plan your event</h2><p class="sub">Start with your info.</p>
@@ -455,7 +455,7 @@ function eS0() {
   ${radioGroup('eventType',['Virtual','In-person'])}
 </div>${eNav()}`;
 }
-
+ 
 function eS1() {
   return `<div class="step-pill">Step 2 of 9 — Save the date</div>
 <h2>Event title &amp; date</h2><p class="sub">These details go on the save-the-date and calendar.</p>
@@ -472,7 +472,7 @@ function eS1() {
   ${!d.programCalChecked ? `<div class="warn-box" style="margin-top:10px">Please confirm the date is clear on the chapter program calendar.</div>` : ''}
 </div>${eNav()}`;
 }
-
+ 
 function eS2() {
   const totalMins = calcTotalMins();
   const blocks = SESSION_ITEMS.map(name => {
@@ -490,7 +490,7 @@ function eS2() {
   </div>` : ''}
 </div>`;
   }).join('');
-
+ 
   return `<div class="step-pill">Step 3 of 9 — Schedule</div>
 <h2>Event schedule</h2>
 <p class="sub">Select each session block and enter its start and end time. Total program length calculates automatically.</p>
@@ -503,7 +503,7 @@ function eS2() {
   ${totalMins > 0 ? `<div class="info-box" style="margin-bottom:0">Remember to update your event start and end times to account for this total.</div>` : ''}
 </div>${eNav()}`;
 }
-
+ 
 function eS3() {
   const isV = d.eventType === 'Virtual';
   return `<div class="step-pill">Step 4 of 9 — Location</div>
@@ -526,22 +526,22 @@ ${isV ? `<div class="card">
   <div class="field"><label>Max attendees (capacity)</label>${inp('maxAttendees','e.g. 60','number','min="1"')}</div>
 </div>${eNav()}`;
 }
-
+ 
 function eS4() {
   const isBask = d.hrExpertise === 'SHRM BASK';
   const baskEmail = isBask ? `Subject: SHRM BASK functional report — ${d.eventTitle||'[Event Title]'}
-
+ 
 Hi [BASK Coordinator],
-
+ 
 A SHRM BASK HR expertise designation has been selected for the upcoming event "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
-
+ 
 Please ensure the SHRM functional report is completed for this event.
-
+ 
 Organizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})
-
+ 
 Thank you,
 Cleveland SHRM Event Planning Tool` : '';
-
+ 
   return `<div class="step-pill">Step 5 of 9 — SHRM BASK</div>
 <h2>SHRM BASK &amp; basket</h2>
 <p class="sub">Select "SHRM BASK" only if this event qualifies for HR expertise credit — this triggers the SHRM functional report requirement.</p>
@@ -562,7 +562,7 @@ Cleveland SHRM Event Planning Tool` : '';
   </div>
 </div>${eNav()}`;
 }
-
+ 
 function eS5() {
   return `<div class="step-pill">Step 6 of 9 — Food</div>
 <h2>Food &amp; refreshments</h2><p class="sub">Does this event include food or beverages?</p>
@@ -580,7 +580,7 @@ function eS5() {
   <div class="field" style="margin-top:8px"><label>Estimated food cost per person ($)</label>${inp('foodCostPer','0','number','min="0"')}</div>` : ''}
 </div>${eNav()}`;
 }
-
+ 
 function eS6() {
   const isPanel = d.speakerType === 'Panel';
   return `<div class="step-pill">Step 7 of 9 — Speaker</div>
@@ -617,7 +617,7 @@ function eS6() {
   </div>` : ''}` : ''}
 </div>${eNav()}`;
 }
-
+ 
 function eS7() {
   return `<div class="step-pill">Step 8 of 9 — Descriptions</div>
 <h2>Event descriptions</h2><p class="sub">These go on the website, email, and marketing materials.</p>
@@ -634,12 +634,12 @@ function eS7() {
   <p class="sub" style="margin-top:8px">Signature events price to break even. All others target 20% profit.</p>
 </div>${eNav('View summary')}`;
 }
-
+ 
 function sponsorBlock() {
   const hasSp = d.hasSponsors === 'Yes';
   const showEmail = hasSp && d.sponsors.length > 0;
   const spEmail = showEmail ? buildSponsorEmail() : '';
-
+ 
   return `<div class="card">
   <div class="card-title">Sponsors <span class="tag tag-purple">Optional</span></div>
   <div class="field"><label>Does this event have sponsors?</label></div>
@@ -665,74 +665,74 @@ function sponsorBlock() {
   <button class="btn btn-ghost btn-sm" onclick="copySponsorEmail()">Copy email text</button>` : ''}` : ''}
 </div>`;
 }
-
+ 
 function buildSponsorEmail() {
   const lines = d.sponsors.map((sp,i) =>
     `Sponsor ${i+1}:\n  Company: ${sp.company||'[Company]'}\n  Contact: ${sp.contactName||'[Name]'} (${sp.contactEmail||'[Email]'})\n  Sponsoring: ${sp.sponsoring||'[TBD]'}`
   ).join('\n\n');
   return `Subject: Sponsor info — ${d.eventTitle||'[Event Title]'} on ${d.eventDate||'[Date]'}
-
+ 
 Hi [Sponsor Coordinator],
-
+ 
 The following sponsors have been confirmed for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}, organized by ${d.creatorName||'[Organizer]'} (${d.creatorEmail||''}).
-
+ 
 ${lines}
-
+ 
 Please follow up with each contact to finalize details, materials, and recognition.
-
+ 
 Cleveland SHRM Event Planning Tool`;
 }
-
+ 
 function copySponsorEmail() { copyText(buildSponsorEmail()); }
-
+ 
 function eS8() {
   const c = calcCosts();
   const needsApproval = d.speakerFee==='Paid' && (parseFloat(d.speakerFeeAmt)||0) >= 1000;
   const att = parseInt(d.estimatedAttendance)||0;
-
+ 
   const sessionSummary = SESSION_ITEMS.filter(s => d.sessionBlocks[s].enabled).map(s => {
     const b = d.sessionBlocks[s];
     const mins = b.startTime && b.endTime ? Math.max(0, timeToMins(b.endTime)-timeToMins(b.startTime)) : 0;
     return `  ${s}: ${b.startTime||'—'} – ${b.endTime||'—'}${mins > 0 ? ' ('+minsToStr(mins)+')' : ''}`;
   }).join('\n');
-
+ 
   const bioEmail = `Subject: Bio & headshot request — ${d.eventTitle||'[Event Title]'}
-
+ 
 Hi ${d.speakerName||'[Speaker Name]'},
-
+ 
 Thank you for agreeing to speak at our upcoming Cleveland SHRM event, "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
-
+ 
 We'd love to feature you in our marketing! Could you please send us:
 • A professional headshot (high resolution preferred)
 • A brief bio (150–200 words)
 • Your title and company: ${d.speakerTitle||'[Title]'} at ${d.speakerCompany||'[Company]'}
-
+ 
 Please reply by [DATE].
-
+ 
 ${d.creatorName||'[Your Name]'}
 Cleveland SHRM`;
-
+ 
   const approvalEmail = `Subject: Board approval needed — speaker fee for ${d.eventTitle||'[Event Title]'}
-
+ 
 Hi [Board Member],
-
+ 
 A speaker fee of ${fmt(parseFloat(d.speakerFeeAmt)||0)} has been entered for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
-
+ 
 Per chapter policy, fees of $1,000 or more require board approval before confirming with the speaker.
-
+ 
 Organizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})
 Speaker: ${d.speakerName||'[Name]'} — ${d.speakerTitle||''} at ${d.speakerCompany||''}
-
+ 
 Please reply to approve or request more information.
-
+ 
 Cleveland SHRM Event Planning Tool`;
-
+ 
   const summaryEmail = `Subject: Event planning summary — ${d.eventTitle||'[Event Title]'}
-
+ 
 Hi ${d.creatorName||''},
-
+ 
 Here is your planning summary for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
-
+ 
 FORMAT: ${d.eventType||''}
 LOCATION: ${d.eventType==='Virtual' ? (d.venueAddress||'[Link]') : (d.venueName||'[Venue]')+', '+(d.venueAddress||'')}
 MAX CAPACITY: ${d.maxAttendees||'[TBD]'}
@@ -741,26 +741,26 @@ SPEAKER: ${d.speakerName||'[TBD]'} — ${d.speakerTitle||''} at ${d.speakerCompa
 SHRM BASK: ${d.hrExpertise==='SHRM BASK' ? 'Yes — functional report required' : 'Not applicable'}
 FOOD: ${d.hasFood==='Yes' ? (d.foodType||'') : 'None'}
 SPONSORS: ${d.hasSponsors==='Yes' && d.sponsors.length > 0 ? d.sponsors.map(s=>s.company||'[Company]').join(', ') : 'None'}
-
+ 
 SCHEDULE:
 ${sessionSummary||'  Not entered'}
 Total program length: ${minsToStr(calcTotalMins())}
-
+ 
 PRICING SUMMARY
 Total estimated cost: ${fmt(c.totalCost)}
 Member price: ${fmt2(c.memberPrice)} per person
 Non-member price: ${fmt2(c.nonMemberPrice)} per person
 Projected revenue: ${fmt(c.projRevenue)}
 Pricing goal: ${d.isSignature ? 'Break even (signature event)' : '20% profit'}
-
+ 
 Cleveland SHRM Event Planning Tool`;
-
+ 
   return `<div class="step-pill">Step 9 of 9 — Summary</div>
 <h2>Event planning summary</h2>
 <p class="sub">Review everything, collect your emails, and you're done.</p>
-
+ 
 ${needsApproval ? `<div class="danger-box">Board approval required — speaker fee of ${fmt(parseFloat(d.speakerFeeAmt)||0)} exceeds $1,000. Send the approval email below before confirming with the speaker.</div>` : ''}
-
+ 
 <div class="card">
   <div class="card-title">Cost breakdown &amp; pricing</div>
   <div class="field">
@@ -785,7 +785,7 @@ ${needsApproval ? `<div class="danger-box">Board approval required — speaker f
   <p class="sub" style="margin-top:8px">Based on ${att} estimated attendees — 75% members at 50% off non-member price.</p>` :
   `<div class="info-box" style="margin-bottom:0">Enter your estimated attendance above to calculate pricing.</div>`}
 </div>
-
+ 
 <div class="card">
   <div class="card-title">Event snapshot</div>
   <table class="price-table">
@@ -802,40 +802,40 @@ ${needsApproval ? `<div class="danger-box">Board approval required — speaker f
     <tr><td>Sponsors</td><td>${d.hasSponsors==='Yes'&&d.sponsors.length>0?d.sponsors.map(s=>s.company||'[Company]').join(', '):'None'}</td></tr>
   </table>
 </div>
-
+ 
 ${sponsorBlock()}
-
+ 
 ${d.speakerName ? `<div class="card">
   <div class="card-title">Bio &amp; photo request <span class="tag tag-blue">Copy &amp; send to speaker</span></div>
   <div class="email-preview">${bioEmail}</div>
   <button class="btn btn-ghost btn-sm" onclick="copyText(\`${bioEmail.replace(/`/g,'\\`')}\`)">Copy email text</button>
 </div>` : ''}
-
+ 
 ${needsApproval ? `<div class="card">
   <div class="card-title">Board approval email <span class="tag tag-red">Required</span></div>
   <div class="email-preview">${approvalEmail}</div>
   <button class="btn btn-ghost btn-sm" onclick="copyText(\`${approvalEmail.replace(/`/g,'\\`')}\`)">Copy email text</button>
 </div>` : ''}
-
+ 
 <div class="card">
   <div class="card-title">Event summary email <span class="tag tag-green">Send to yourself</span></div>
   <div class="email-preview">${summaryEmail}</div>
   <button class="btn btn-ghost btn-sm" onclick="copyText(\`${summaryEmail.replace(/`/g,'\\`')}\`)">Copy email text</button>
 </div>
-
+ 
 <div class="nav">
   <button class="btn btn-ghost" onclick="go(-1)">Back</button>
   <button class="btn btn-primary" onclick="restart()">Plan a new event</button>
 </div>`;
 }
-
+ 
 // ── MAIN RENDER ───────────────────────────────────────────────────────────
 function render() {
   if (!mode) { app().innerHTML = renderEntry(); return; }
   if (mode === 'std') { app().innerHTML = renderStd(); return; }
   app().innerHTML = renderEvent();
 }
-
+ 
 render();
 </script>
 </body>
