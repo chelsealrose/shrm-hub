@@ -5,837 +5,493 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cleveland SHRM — Event Planning Tool</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
- 
-  :root {
-    --blue: #185FA5;
-    --blue-light: #E6F1FB;
-    --blue-mid: #B5D4F4;
-    --blue-dark: #0C447C;
-    --green: #3B6D11;
-    --green-light: #EAF3DE;
-    --green-mid: #C0DD97;
-    --amber-light: #FAEEDA;
-    --amber-dark: #854F0B;
-    --red-light: #FCEBEB;
-    --red-dark: #A32D2D;
-    --purple-light: #EEEDFE;
-    --purple-dark: #3C3489;
-    --border: #e2e2e2;
-    --border-strong: #c8c8c8;
-    --bg: #ffffff;
-    --bg-secondary: #f7f7f5;
-    --text: #1a1a1a;
-    --text-secondary: #6b6b6b;
-    --text-hint: #9b9b9b;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-  }
- 
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #f0f2f5;
-    color: var(--text);
-    min-height: 100vh;
-    padding: 20px 12px 60px;
-  }
- 
-  .w { max-width: 680px; margin: 0 auto; }
- 
-  h2 { font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-  .sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
- 
-  .step-pill {
-    display: inline-block; font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 99px;
-    background: var(--blue-light); color: var(--blue); margin-bottom: 10px;
-  }
-  .std-pill {
-    display: inline-block; font-size: 11px; font-weight: 600;
-    padding: 3px 10px; border-radius: 99px;
-    background: var(--green-light); color: var(--green); margin-bottom: 10px;
-  }
- 
-  label { font-size: 13px; font-weight: 600; color: var(--text); display: block; margin-bottom: 5px; }
- 
-  input[type=text], input[type=email], input[type=number], input[type=date], input[type=time], textarea {
-    width: 100%; padding: 8px 10px; font-size: 14px;
-    border: 1px solid var(--border-strong); border-radius: var(--radius-md);
-    background: var(--bg); color: var(--text);
-    font-family: inherit; margin-bottom: 14px;
-    transition: border-color .15s;
-  }
-  input:focus, textarea:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,95,165,.12); }
-  textarea { resize: vertical; min-height: 70px; }
- 
-  .field { margin-bottom: 14px; }
-  .field label { margin-bottom: 5px; }
-  .field input, .field textarea { margin-bottom: 0; }
- 
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
- 
-  .radio-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .radio-btn {
-    padding: 7px 14px; font-size: 13px; border-radius: 99px;
-    border: 1px solid var(--border-strong); cursor: pointer;
-    background: var(--bg-secondary); color: var(--text-secondary);
-    transition: all .15s; user-select: none;
-  }
-  .radio-btn:hover { border-color: var(--blue); color: var(--blue); }
-  .radio-btn.sel { background: var(--blue); border-color: var(--blue); color: #fff; }
- 
-  .check-item {
-    display: flex; align-items: center; gap: 9px; padding: 8px 12px;
-    border: 1px solid var(--border); border-radius: var(--radius-md);
-    cursor: pointer; transition: background .15s;
-  }
-  .check-item:hover { background: var(--bg-secondary); }
-  .check-item.sel { background: var(--blue-light); border-color: var(--blue-mid); }
-  .chk {
-    width: 17px; height: 17px; border-radius: 4px;
-    border: 1.5px solid var(--border-strong); flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--bg); transition: all .15s;
-  }
-  .check-item.sel .chk { background: var(--blue); border-color: var(--blue); }
-  .chk svg { display: none; }
-  .check-item.sel .chk svg { display: block; }
-  .check-label { font-size: 13px; color: var(--text); }
- 
-  .card {
-    background: var(--bg); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; margin-bottom: 1rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
-  }
-  .card-title {
-    font-size: 15px; font-weight: 600; color: var(--text);
-    margin-bottom: 10px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
- 
-  .warn-box { background: var(--amber-light); border-left: 3px solid #EF9F27; border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--amber-dark); margin-bottom: 14px; line-height: 1.5; }
-  .danger-box { background: var(--red-light); border-left: 3px solid #E24B4A; border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--red-dark); margin-bottom: 14px; line-height: 1.5; }
-  .success-box { background: var(--green-light); border-left: 3px solid #639922; border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--green); margin-bottom: 14px; line-height: 1.5; }
-  .info-box { background: var(--blue-light); border-left: 3px solid var(--blue); border-radius: 0 var(--radius-md) var(--radius-md) 0; padding: 9px 12px; font-size: 13px; color: var(--blue-dark); margin-bottom: 14px; line-height: 1.5; }
- 
-  .sheet-link {
-    display: inline-flex; align-items: center; gap: 6px; font-size: 13px;
-    color: var(--blue); text-decoration: none; padding: 6px 12px;
-    border: 1px solid var(--blue-mid); border-radius: var(--radius-md);
-    background: var(--blue-light); margin-bottom: 10px; margin-right: 8px;
-    transition: background .15s;
-  }
-  .sheet-link:hover { background: var(--blue-mid); }
- 
-  .nav {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-top: 1.5rem; padding-top: 1rem;
-    border-top: 1px solid var(--border);
-  }
- 
-  .btn {
-    padding: 9px 22px; font-size: 14px; border-radius: var(--radius-md);
-    border: 1px solid var(--border-strong); cursor: pointer;
-    font-family: inherit; transition: all .15s; font-weight: 500;
-  }
-  .btn-primary { background: var(--blue); border-color: var(--blue); color: #fff; }
-  .btn-primary:hover { background: var(--blue-dark); }
-  .btn-ghost { background: transparent; color: var(--text-secondary); }
-  .btn-ghost:hover { background: var(--bg-secondary); }
-  .btn-green { background: var(--green); border-color: var(--green); color: #fff; }
-  .btn-green:hover { background: #27500A; }
-  .btn-sm { padding: 6px 14px; font-size: 13px; }
-  .btn:disabled { opacity: .4; cursor: default; }
- 
-  .prog { display: flex; gap: 4px; margin-bottom: 1.5rem; }
-  .prog-dot { height: 4px; flex: 1; border-radius: 99px; background: var(--border); transition: background .3s; }
-  .prog-dot.done { background: var(--blue); }
-  .prog-dot.active { background: #378ADD; }
- 
-  .sum-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 10px; margin: 14px 0; }
-  .sum-card { background: var(--bg-secondary); border-radius: var(--radius-md); padding: 14px 10px; text-align: center; }
-  .sum-num { font-size: 22px; font-weight: 600; color: var(--blue); }
-  .sum-label { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
- 
-  .price-table { width: 100%; font-size: 13px; border-collapse: collapse; margin: 10px 0; }
-  .price-table td { padding: 6px 8px; border-bottom: 1px solid var(--border); }
-  .price-table td:last-child { text-align: right; font-weight: 600; }
-  .price-table tr.total-row td { border-bottom: none; font-weight: 600; font-size: 14px; border-top: 1px solid var(--border-strong); padding-top: 10px; }
- 
-  .email-preview {
-    background: var(--bg-secondary); border: 1px solid var(--border);
-    border-radius: var(--radius-md); padding: 12px; font-size: 13px;
-    color: var(--text); margin-bottom: 10px; line-height: 1.6;
-    white-space: pre-wrap; word-break: break-word;
-  }
- 
-  .tag { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-left: 4px; }
-  .tag-blue { background: var(--blue-light); color: var(--blue); }
-  .tag-amber { background: var(--amber-light); color: var(--amber-dark); }
-  .tag-red { background: var(--red-light); color: var(--red-dark); }
-  .tag-green { background: var(--green-light); color: var(--green); }
-  .tag-purple { background: var(--purple-light); color: var(--purple-dark); }
- 
-  hr { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
- 
-  .sponsor-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; position: relative; }
-  .sponsor-num { font-size: 11px; font-weight: 600; color: var(--blue); margin-bottom: 8px; }
-  .sponsor-remove { position: absolute; top: 10px; right: 10px; font-size: 12px; color: var(--text-secondary); cursor: pointer; padding: 2px 8px; border: 1px solid var(--border); border-radius: 99px; background: var(--bg); }
-  .sponsor-remove:hover { background: var(--red-light); color: var(--red-dark); border-color: #F09595; }
- 
-  .session-block { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px; }
-  .session-header { display: flex; align-items: center; gap: 9px; cursor: pointer; }
-  .session-header.open { margin-bottom: 10px; }
-  .session-name { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
-  .session-mins { font-size: 12px; color: var(--text-secondary); margin-left: auto; padding-right: 8px; }
-  .session-times { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .session-times input { margin-bottom: 0; }
- 
-  .total-bar {
-    background: var(--blue-light); border: 1px solid var(--blue-mid);
-    border-radius: var(--radius-md); padding: 10px 14px;
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
-  }
-  .total-bar-label { font-size: 13px; color: var(--blue-dark); }
-  .total-bar-val { font-size: 15px; font-weight: 600; color: var(--blue); }
- 
-  /* Entry screen */
-  .entry-wrap { padding: 2rem 0 1rem; }
-  .entry-logo { font-size: 13px; font-weight: 700; letter-spacing: .5px; color: var(--blue); text-transform: uppercase; margin-bottom: 1.5rem; }
-  .entry-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-  .entry-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.6; }
-  .path-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }
-  .path-card {
-    border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
-    padding: 1.5rem 1.25rem; cursor: pointer; transition: all .2s;
-    background: var(--bg); text-align: left;
-    box-shadow: 0 1px 3px rgba(0,0,0,.06);
-  }
-  .path-card:hover { border-color: var(--blue); background: var(--blue-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(24,95,165,.15); }
-  .path-icon { font-size: 28px; margin-bottom: 10px; }
-  .path-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-  .path-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
- 
-  @media (max-width: 480px) {
-    .path-grid { grid-template-columns: 1fr; }
-    .row2 { grid-template-columns: 1fr; }
-    .session-times { grid-template-columns: 1fr; }
-    .sum-grid { grid-template-columns: 1fr 1fr; }
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --blue:#185FA5;--blue-light:#E6F1FB;--blue-mid:#B5D4F4;--blue-dark:#0C447C;
+  --green:#3B6D11;--green-light:#EAF3DE;
+  --amber:#EF9F27;--amber-light:#FAEEDA;--amber-dark:#854F0B;
+  --red:#E24B4A;--red-light:#FCEBEB;--red-dark:#A32D2D;
+  --purple-light:#EEEDFE;--purple-dark:#3C3489;
+  --border:#e2e2e2;--border-strong:#c8c8c8;
+  --bg:#fff;--bg2:#f7f7f5;--text:#1a1a1a;--text2:#6b6b6b;
+  --r-md:8px;--r-lg:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f2f5;color:var(--text);padding:20px 12px 60px;min-height:100vh}
+.w{max-width:680px;margin:0 auto}
+h2{font-size:18px;font-weight:600;margin-bottom:4px}
+.sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.5}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--blue-light);color:var(--blue);margin-bottom:10px}
+.std-pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--green-light);color:var(--green);margin-bottom:10px}
+.eid-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-mid);margin-bottom:14px}
+label{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:5px}
+.opt-label{font-weight:400;color:var(--text2);font-size:12px;margin-left:4px}
+input[type=text],input[type=email],input[type=number],input[type=date],input[type=time],textarea{width:100%;padding:8px 10px;font-size:14px;border:1px solid var(--border-strong);border-radius:var(--r-md);background:var(--bg);color:var(--text);font-family:inherit;margin-bottom:14px;transition:border-color .15s}
+input[type=file]{width:100%;padding:6px;font-size:13px;border:1px dashed var(--border-strong);border-radius:var(--r-md);background:var(--bg2);color:var(--text2);margin-bottom:14px;cursor:pointer}
+input[type=file]:hover{border-color:var(--blue);background:var(--blue-light)}
+input:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.12)}
+textarea{resize:vertical;min-height:65px}
+.field{margin-bottom:14px}
+.field label{margin-bottom:5px}
+.field input,.field textarea{margin-bottom:0}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.radio-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.radio-btn{padding:7px 14px;font-size:13px;border-radius:99px;border:1px solid var(--border-strong);cursor:pointer;background:var(--bg2);color:var(--text2);transition:all .15s;user-select:none}
+.radio-btn:hover{border-color:var(--blue);color:var(--blue)}
+.radio-btn.sel{background:var(--blue);border-color:var(--blue);color:#fff}
+.check-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:background .15s;margin-bottom:6px}
+.check-item:hover{background:var(--bg2)}
+.check-item.sel{background:var(--blue-light);border-color:var(--blue-mid)}
+.chk{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--border-strong);flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.check-item.sel .chk{background:var(--blue);border-color:var(--blue)}
+.chk svg{display:none}
+.check-item.sel .chk svg{display:block}
+.check-label{font-size:13px;color:var(--text)}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.1rem 1.25rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.card-title{font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.warn-box{background:var(--amber-light);border-left:3px solid var(--amber);border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 12px;font-size:13px;color:var(--amber-dark);margin-bottom:14px;line-height:1.5}
+.danger-box{background:var(--red-light);border-left:3px solid var(--red);border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 12px;font-size:13px;color:var(--red-dark);margin-bottom:14px;line-height:1.5}
+.success-box{background:var(--green-light);border-left:3px solid #639922;border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 12px;font-size:13px;color:var(--green);margin-bottom:14px;line-height:1.5}
+.info-box{background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 12px;font-size:13px;color:var(--blue-dark);margin-bottom:14px;line-height:1.5}
+.sheet-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--blue);text-decoration:none;padding:6px 12px;border:1px solid var(--blue-mid);border-radius:var(--r-md);background:var(--blue-light);margin-bottom:10px;margin-right:8px;transition:background .15s}
+.sheet-link:hover{background:var(--blue-mid)}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)}
+.btn{padding:9px 22px;font-size:14px;border-radius:var(--r-md);border:1px solid var(--border-strong);cursor:pointer;font-family:inherit;transition:all .15s;font-weight:500;text-decoration:none;display:inline-block}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-dark)}
+.btn-ghost{background:transparent;color:var(--text2)}
+.btn-ghost:hover{background:var(--bg2)}
+.btn-green{background:var(--green);border-color:var(--green);color:#fff}
+.btn-green:hover{background:#27500A}
+.btn-sm{padding:6px 14px;font-size:13px}
+.prog{display:flex;gap:4px;margin-bottom:1.5rem}
+.prog-dot{height:4px;flex:1;border-radius:99px;background:var(--border);transition:background .3s}
+.prog-dot.done{background:var(--blue)}
+.prog-dot.active{background:#378ADD}
+.price-table{width:100%;font-size:13px;border-collapse:collapse;margin:10px 0}
+.price-table td{padding:7px 8px;border-bottom:1px solid var(--border)}
+.price-table td:last-child{text-align:right;font-weight:600}
+.price-table tr.total-row td{border-bottom:none;font-weight:700;font-size:14px;border-top:2px solid var(--border-strong);padding-top:10px}
+.email-preview{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;font-size:13px;color:var(--text);margin-bottom:10px;line-height:1.6;white-space:pre-wrap;word-break:break-word;max-height:260px;overflow-y:auto}
+.tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;margin-left:4px}
+.tag-blue{background:var(--blue-light);color:var(--blue)}
+.tag-amber{background:var(--amber-light);color:var(--amber-dark)}
+.tag-red{background:var(--red-light);color:var(--red-dark)}
+.tag-green{background:var(--green-light);color:var(--green)}
+hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+.sub-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;margin-bottom:10px;position:relative}
+.sub-card-label{font-size:11px;font-weight:600;color:var(--blue);margin-bottom:8px}
+.sub-card-remove{position:absolute;top:10px;right:10px;font-size:12px;color:var(--text2);cursor:pointer;padding:2px 8px;border:1px solid var(--border);border-radius:99px;background:var(--bg)}
+.sub-card-remove:hover{background:var(--red-light);color:var(--red-dark);border-color:#F09595}
+.session-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-bottom:8px}
+.session-hdr{display:flex;align-items:center;gap:9px;cursor:pointer}
+.session-hdr.open{margin-bottom:10px}
+.session-name{font-size:13px;font-weight:500;flex:1}
+.session-dur{font-size:12px;color:var(--text2)}
+.total-bar{background:var(--blue-light);border:1px solid var(--blue-mid);border-radius:var(--r-md);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.total-bar-label{font-size:13px;color:var(--blue-dark)}
+.total-bar-val{font-size:15px;font-weight:600;color:var(--blue)}
+.entry-wrap{padding:2rem 0 1rem}
+.entry-logo{font-size:13px;font-weight:700;letter-spacing:.5px;color:var(--blue);text-transform:uppercase;margin-bottom:1.5rem}
+.entry-title{font-size:24px;font-weight:700;margin-bottom:8px}
+.entry-sub{font-size:14px;color:var(--text2);margin-bottom:2rem;line-height:1.6}
+.path-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem}
+.path-card{border:1px solid var(--border-strong);border-radius:var(--r-lg);padding:1.5rem 1.25rem;cursor:pointer;transition:all .2s;background:var(--bg);text-align:left;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.path-card:hover{border-color:var(--blue);background:var(--blue-light);transform:translateY(-1px);box-shadow:0 4px 12px rgba(24,95,165,.15)}
+.path-icon{font-size:28px;margin-bottom:10px}
+.path-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.path-desc{font-size:12px;color:var(--text2);line-height:1.5}
+@media(max-width:480px){.path-grid,.row2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="w">
-  <div id="app"></div>
-</div>
- 
+<div class="w"><div id="app"></div></div>
 <script>
-// ── STATE ─────────────────────────────────────────────────────────────────
-let mode = '', step = 0;
- 
-let std = { creatorName:'', creatorEmail:'', eventTitle:'', eventDate:'', eventAmPm:'am', eventType:'', programCalChecked:false };
- 
-const SESSION_ITEMS = ['Program/presentation','Q&A','Check-in & networking','Other (optional)'];
- 
-let d = {
-  creatorName:'', creatorEmail:'', eventType:'',
-  eventTitle:'', eventDate:'', eventAmPm:'am', programCalChecked:false,
-  sessionBlocks:{},
-  venueName:'', venueAddress:'', venueParking:'', maxAttendees:'', venuePrice:'',
-  hrExpertise:'', baskCoordEmail:'', shrmBasket:false,
-  hasFood:'', foodType:'', foodCostPer:'', caterWho:'',
-  speakerType:'', speakerFee:'', speakerFeeAmt:'', speakerName:'', speakerEmail:'', speakerCompany:'', speakerTitle:'',
-  spk2Name:'', spk2Email:'', spk2Company:'', spk2Title:'',
-  shortDesc:'', fullDesc:'', learningObj:'', isSignature:false,
+const ADMIN_EMAIL='admin@clevelandshrm.com';
+const VENUE_SHEET='https://docs.google.com/spreadsheets/PLACEHOLDER_VENUE';
+const SPONSOR_SHEET='https://docs.google.com/spreadsheets/PLACEHOLDER_SPONSORS';
+const SESSION_ITEMS=['Check-in & networking','Program/presentation','Q&A','Other (optional)'];
+const PDC_AREAS=['HR Expertise (HR Knowledge)','Interpersonal (Leadership & Navigation)','Interpersonal (Communication)','Interpersonal (Global & Cultural Effectiveness)','Interpersonal (Relationship Management)','Business (Business Acumen)','Business (Consultation)','Business (Critical Evaluation)','Business (Ethical Practice)'];
+const STEPS=9;
+
+let mode='',step=0;
+let d={
+  creatorName:'',creatorEmail:'',eventType:'',
+  eventTitle:'',eventDate:'',timeMode:'',eventAmPm:'',startTime:'',endTime:'',
+  programCalChecked:false,
+  sessionBlocks:{},sessionHelpMode:false,totalDuration:'',
+  venueName:'',venueAddress:'',venueParking:'',venuePrice:'',maxAttendees:'',
+  offerPDC:'',pdcAreas:[],shrmBasket:false,
+  hasFood:'',foodType:'',foodCostPer:'',caterWho:'',
+  speakerType:'',spkName:'',spkEmail:'',spkCompany:'',spkTitle:'',spkFee:'',spkFeeAmt:'',
+  spkPhotoFile:null,spkBioFile:null,panelists:[],
+  shortDesc:'',fullDesc:'',learningObj:'',
   estimatedAttendance:'',
-  hasSponsors:'', sponsorCoordEmail:'', sponsors:[]
+  hasSponsors:'',sponsors:[],
+  stdName:'',stdEmail:'',stdTitle:'',stdSpeaker:'',stdDate:'',stdAmPm:'',stdType:'',
+  stdLocKnown:null,stdLocName:'',stdLocAddr:'',stdCalChecked:false,stdDone:false
 };
- 
-SESSION_ITEMS.forEach(s => { d.sessionBlocks[s] = { enabled:false, startTime:'', endTime:'' }; });
- 
+SESSION_ITEMS.forEach(s=>{d.sessionBlocks[s]={enabled:false,duration:''};});
+
+// ── EVENT ID ──────────────────────────────────────────────────────────────
+function makeEventId(title,date,prefix){
+  prefix=prefix||'SHRM';
+  const datePart=date?date.replace(/-/g,''):'NODATE';
+  const slug=(title||'EVENT').toUpperCase().replace(/[^A-Z0-9\s]/g,'').trim().split(/\s+/).slice(0,3).join('-');
+  return`${prefix}-${datePart}-${slug}`;
+}
+function eventId(){return makeEventId(d.eventTitle,d.eventDate);}
+function stdEventId(){return makeEventId(d.stdTitle,d.stdDate);}
+function eidHeader(id){return`Event ID: ${id}\n${'─'.repeat(40)}\n`;}
+function eidSubject(id,subj){return`[${id}] ${subj}`;}
+
 // ── HELPERS ───────────────────────────────────────────────────────────────
-const app = () => document.getElementById('app');
- 
-function ckSvg() {
-  return `<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const app=()=>document.getElementById('app');
+function ck(){return`<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+function set(k,v){d[k]=v;}
+function tog(k){d[k]=!d[k];render();}
+function togArr(k,v){const i=d[k].indexOf(v);if(i>-1)d[k].splice(i,1);else d[k].push(v);render();}
+function togSession(n){d.sessionBlocks[n].enabled=!d.sessionBlocks[n].enabled;render();}
+function setSession(n,v){d.sessionBlocks[n].duration=v;updateTotal();}
+function addPanelist(){if(d.panelists.length<6)d.panelists.push({name:'',email:'',company:'',title:'',photoFile:null,bioFile:null});render();}
+function removePanelist(i){d.panelists.splice(i,1);render();}
+function setPanelist(i,k,v){d.panelists[i][k]=v;}
+function addSponsor(){d.sponsors.push({company:'',contactName:'',contactEmail:'',sponsoring:''});render();}
+function removeSponsor(i){d.sponsors.splice(i,1);render();}
+function setSponsor(i,k,v){d.sponsors[i][k]=v;}
+function totalMins(){if(d.sessionHelpMode)return parseInt(d.totalDuration)||0;let t=0;SESSION_ITEMS.forEach(s=>{const b=d.sessionBlocks[s];if(b.enabled)t+=parseInt(b.duration)||0;});return t;}
+function minsToStr(m){if(!m||m<=0)return'—';const h=Math.floor(m/60),mn=m%60;return h>0?(mn>0?`${h}h ${mn}m`:`${h}h`):`${mn}m`;}
+function updateTotal(){const el=document.getElementById('total-dur');if(el)el.textContent=minsToStr(totalMins());}
+function fmt(n){return'$'+Math.round(n).toLocaleString();}
+function fmt2(n){return'$'+(Math.round(n*100)/100).toFixed(2);}
+function isVirtual(){return d.eventType==='Virtual';}
+function within6Weeks(){if(!d.eventDate)return false;const now=new Date(),ev=new Date(d.eventDate),diff=(ev-now)/(1000*60*60*24);return diff>=0&&diff<42;}
+function go(dir){step=Math.max(0,Math.min(STEPS-1,step+dir));render();scroll();}
+function scroll(){document.querySelector('.w').scrollIntoView({behavior:'smooth'});}
+function startMode(m){mode=m;step=0;render();scroll();}
+function restart(){mode='';step=0;render();scroll();}
+function prog(){return`<div class="prog">${Array.from({length:STEPS},(_,i)=>`<div class="prog-dot${i<step?' done':i===step?' active':''}"></div>`).join('')}</div>`;}
+function eNav(nl){return`<div class="nav"><button class="btn btn-ghost" onclick="${step===0?'restart()':'go(-1)'}">${step===0?'Back to start':'Back'}</button><button class="btn btn-primary" onclick="go(1)">${nl||'Next'}</button></div>`;}
+function radioGroup(k,opts){return`<div class="radio-group">${opts.map(o=>`<div class="radio-btn${d[k]===o?' sel':''}" onclick="set('${k}','${o}');render()">${o}</div>`).join('')}</div>`;}
+function inp(k,ph,type,extra){type=type||'text';extra=extra||'';return`<input type="${type}" placeholder="${ph||''}" value="${(d[k]||'').toString().replace(/"/g,'&quot;')}" oninput="set('${k}',this.value)"${extra?' '+extra:''}>`;}
+function ta(k,ph){return`<textarea placeholder="${ph||''}" oninput="set('${k}',this.value)">${d[k]||''}</textarea>`;}
+function mailto(to,subj,body){return`mailto:${to||''}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;}
+
+function eidBadge(id){
+  return`<div class="eid-badge">🔖 Event ID: ${id}</div>`;
 }
- 
-function set(key, val) { d[key] = val; }
-function setStd(key, val) { std[key] = val; }
-function toggleCheck(key) { d[key] = !d[key]; render(); }
-function toggleCheckStd(key) { std[key] = !std[key]; render(); }
-function addSponsor() { d.sponsors.push({company:'',contactName:'',contactEmail:'',sponsoring:''}); render(); }
-function removeSponsor(i) { d.sponsors.splice(i,1); render(); }
-function setSponsor(i, key, val) { d.sponsors[i][key] = val; }
- 
-function toggleSession(name) { d.sessionBlocks[name].enabled = !d.sessionBlocks[name].enabled; render(); }
-function setSession(name, key, val) { d.sessionBlocks[name][key] = val; updateTotalBar(); }
- 
-function timeToMins(t) { if (!t) return 0; const [h,m] = t.split(':').map(Number); return h*60+(m||0); }
-function minsToStr(m) {
-  if (m <= 0) return '—';
-  const h = Math.floor(m/60), mn = m%60;
-  return h > 0 ? (mn > 0 ? `${h}h ${mn}m` : `${h}h`) : `${mn}m`;
-}
-function calcTotalMins() {
-  let total = 0;
-  SESSION_ITEMS.forEach(s => {
-    const b = d.sessionBlocks[s];
-    if (b.enabled && b.startTime && b.endTime) { const diff = timeToMins(b.endTime) - timeToMins(b.startTime); if (diff > 0) total += diff; }
-  });
-  return total;
-}
-function updateTotalBar() { const el = document.getElementById('total-length'); if (el) el.textContent = minsToStr(calcTotalMins()); }
- 
-function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
-function fmt2(n) { return '$' + (Math.round(n*100)/100).toFixed(2); }
- 
-function copyText(txt) {
-  navigator.clipboard.writeText(txt)
-    .then(() => alert('Copied to clipboard!'))
-    .catch(() => alert('Please select and copy the text manually.'));
-}
- 
-function radioGroup(key, options, obj) {
-  obj = obj || d;
-  const fn = obj === std ? 'setStd' : 'set';
-  return `<div class="radio-group">${options.map(o =>
-    `<div class="radio-btn${obj[key]===o?' sel':''}" onclick="${fn}('${key}','${o}');render()">${o}</div>`
-  ).join('')}</div>`;
-}
- 
-function inp(key, ph, type, extra, obj) {
-  type = type||'text'; extra = extra||''; obj = obj||d;
-  const fn = obj === std ? 'setStd' : 'set';
-  return `<input type="${type}" placeholder="${ph||''}" value="${(obj[key]||'').toString().replace(/"/g,'&quot;')}" oninput="${fn}('${key}',this.value)"${extra?' '+extra:''}>`;
-}
- 
-function ta(key, ph) { return `<textarea placeholder="${ph||''}" oninput="set('${key}',this.value)">${d[key]||''}</textarea>`; }
- 
-function calcCosts() {
-  const att = parseInt(d.estimatedAttendance)||0;
-  const food = parseFloat(d.foodCostPer)||0;
-  const venue = parseFloat(d.venuePrice)||0;
-  const spkFee = d.speakerFee==='Paid' ? (parseFloat(d.speakerFeeAmt)||0) : 0;
-  const totalCost = (food*att) + venue + spkFee;
-  const target = d.isSignature ? totalCost : totalCost*1.20;
-  const nonMemberPrice = att > 0 ? target/(att*0.625) : 0;
-  const memberPrice = nonMemberPrice*0.5;
-  const projRevenue = att > 0 ? (0.75*att*memberPrice + 0.25*att*nonMemberPrice) : 0;
-  return { att, food, venue, spkFee, totalCost, nonMemberPrice, memberPrice, projRevenue };
-}
- 
-function go(dir) { step = Math.max(0, Math.min(8, step+dir)); render(); scrollTop(); }
-function scrollTop() { document.querySelector('.w').scrollIntoView({behavior:'smooth'}); }
-function startMode(m) { mode = m; step = 0; render(); scrollTop(); }
-function restart() { mode = ''; step = 0; render(); scrollTop(); }
- 
-function prog() {
-  return `<div class="prog">${Array.from({length:9},(_,i) =>
-    `<div class="prog-dot${i<step?' done':i===step?' active':''}"></div>`
-  ).join('')}</div>`;
-}
- 
-function eNav(nextLabel) {
-  return `<div class="nav">
-    <button class="btn btn-ghost" onclick="${step===0?'restart()':'go(-1)'}">${step===0?'Back to start':'Back'}</button>
-    <button class="btn btn-primary" onclick="go(1)">${nextLabel||'Next'}</button>
-  </div>`;
-}
- 
+
 // ── ENTRY ─────────────────────────────────────────────────────────────────
-function renderEntry() {
-  return `<div class="entry-wrap">
-    <div class="entry-logo">Cleveland SHRM</div>
-    <div class="entry-title">Event planning tool</div>
-    <div class="entry-sub">Your step-by-step guide for planning chapter events — from save the date to sponsor emails and pricing.</div>
-    <div class="path-grid">
-      <div class="path-card" onclick="startMode('std')">
-        <div class="path-icon">📅</div>
-        <div class="path-name">Save the date</div>
-        <div class="path-desc">Collect the basics — title, date, time, and creator info. Quick and simple.</div>
-      </div>
-      <div class="path-card" onclick="startMode('event')">
-        <div class="path-icon">📋</div>
-        <div class="path-name">Full event planning</div>
-        <div class="path-desc">Plan a complete event — venue, speakers, food, pricing, sponsors, and more.</div>
-      </div>
-    </div>
-  </div>`;
-}
- 
+function renderEntry(){return`<div class="entry-wrap">
+<div class="entry-logo">Cleveland SHRM</div>
+<div class="entry-title">Event planning tool</div>
+<div class="entry-sub">Your step-by-step guide for planning chapter events — from save the date to sponsor emails and cost summaries.</div>
+<div class="path-grid">
+  <div class="path-card" onclick="startMode('std')"><div class="path-icon">📅</div><div class="path-name">Save the date</div><div class="path-desc">Quick form — title, date, time, speaker, and location.</div></div>
+  <div class="path-card" onclick="startMode('event')"><div class="path-icon">📋</div><div class="path-name">Full event planning</div><div class="path-desc">Plan a complete event — venue, speakers, food, costs, sponsors, and more.</div></div>
+</div></div>`;}
+
 // ── SAVE THE DATE ─────────────────────────────────────────────────────────
-function renderStd() { if (step===0) return stdStep0(); return stdDone(); }
- 
-function stdStep0() {
-  const calOk = std.programCalChecked;
-  return `<div class="std-pill">Save the date</div>
+function renderStd(){
+  if(d.stdDone)return stdDone();
+  const isIP=d.stdType==='In-person';
+  const sid=stdEventId();
+  const showId=d.stdTitle&&d.stdDate;
+  return`<div class="std-pill">Save the date</div>
 <h2>Save the date details</h2>
-<p class="sub">Fill in all the details needed to send a save the date.</p>
+<p class="sub">Fill in the details — a ready-to-send email will be generated.</p>
+${showId?eidBadge(sid):''}
 <div class="card">
-  <div class="field"><label>Your name</label>${inp('creatorName','Jane Smith','text','',std)}</div>
-  <div class="field"><label>Your email</label>${inp('creatorEmail','jane@clevelandshrm.org','email','',std)}</div>
+  <div class="field"><label>Your name</label><input type="text" placeholder="Jane Smith" value="${(d.stdName||'').replace(/"/g,'&quot;')}" oninput="set('stdName',this.value)"></div>
+  <div class="field"><label>Your email</label><input type="email" placeholder="jane@clevelandshrm.org" value="${(d.stdEmail||'').replace(/"/g,'&quot;')}" oninput="set('stdEmail',this.value)"></div>
   <hr>
-  <div class="field"><label>Event title</label>${inp('eventTitle','e.g. October Lunch & Learn','text','',std)}</div>
+  <div class="field"><label>Event title</label><input type="text" placeholder="e.g. October Lunch & Learn" value="${(d.stdTitle||'').replace(/"/g,'&quot;')}" oninput="set('stdTitle',this.value);render()"></div>
+  <div class="field"><label>Speaker(s) <span class="opt-label">(optional)</span></label><input type="text" placeholder="e.g. Jane Smith, John Doe" value="${(d.stdSpeaker||'').replace(/"/g,'&quot;')}" oninput="set('stdSpeaker',this.value)"></div>
   <div class="row2">
-    <div class="field"><label>Event date</label>${inp('eventDate','','date','',std)}</div>
-    <div class="field"><label>Time of day</label>${radioGroup('eventAmPm',['am','midday','pm'],std)}</div>
+    <div class="field"><label>Event date</label><input type="date" value="${d.stdDate||''}" oninput="set('stdDate',this.value);render()"></div>
+    <div class="field"><label>Time of day</label><div class="radio-group" style="margin-bottom:0">${['am','midday','pm'].map(o=>`<div class="radio-btn${d.stdAmPm===o?' sel':''}" onclick="set('stdAmPm','${o}');render()">${o}</div>`).join('')}</div></div>
   </div>
-  <div class="field"><label>Event type</label>${radioGroup('eventType',['Virtual','In-person'],std)}</div>
+  <div class="field"><label>Event type</label><div class="radio-group">${['Virtual','In-person'].map(o=>`<div class="radio-btn${d.stdType===o?' sel':''}" onclick="set('stdType','${o}');render()">${o}</div>`).join('')}</div></div>
+  ${isIP?`<hr>
+  <div class="field"><label>Location</label></div>
+  <div class="radio-group">
+    <div class="radio-btn${d.stdLocKnown==='true'?' sel':''}" onclick="set('stdLocKnown','true');render()">Yes, I know it</div>
+    <div class="radio-btn${d.stdLocKnown==='false'?' sel':''}" onclick="set('stdLocKnown','false');window.open('${VENUE_SHEET}','_blank');render()">I don't know / help me</div>
+  </div>
+  ${d.stdLocKnown==='true'?`<div class="field"><label>Venue name</label><input type="text" placeholder="e.g. Huntington Convention Center" value="${(d.stdLocName||'').replace(/"/g,'&quot;')}" oninput="set('stdLocName',this.value)"></div>
+  <div class="field"><label>Address <span class="opt-label">(optional)</span></label><input type="text" placeholder="123 Main St, Cleveland, OH" value="${(d.stdLocAddr||'').replace(/"/g,'&quot;')}" oninput="set('stdLocAddr',this.value)"></div>`:''}
+  ${d.stdLocKnown==='false'?`<div class="warn-box">Venue resource sheet opened in a new tab. Use the button below to email the venue coordinator for help.</div>
+  <a class="btn btn-ghost btn-sm" href="${mailto('venues@clevelandshrm.org',eidSubject(sid,'Venue help needed'),eidHeader(sid)+'Hi,\n\nI need help finding a venue for an upcoming Cleveland SHRM event.\n\nEvent: '+(d.stdTitle||'[Title]')+'\nDate: '+(d.stdDate||'[Date]')+'\nOrganizer: '+(d.stdName||'')+ ' ('+(d.stdEmail||'')+')\n\nThank you!')}">Open venue help email</a>`:''}
+  `:''}
   <hr>
-  <div class="check-item${calOk?' sel':''}" onclick="toggleCheckStd('programCalChecked')">
-    <div class="chk">${ckSvg()}</div>
-    <span class="check-label">Program calendar date has been checked for conflicts</span>
-  </div>
-  ${!calOk ? `<div class="warn-box" style="margin-top:10px">Please confirm the date is clear on the program calendar before sending the save the date.</div>` : ''}
+  <div class="check-item${d.stdCalChecked?' sel':''}" onclick="tog('stdCalChecked')"><div class="chk">${ck()}</div><span class="check-label">Program calendar date has been checked for conflicts</span></div>
+  ${!d.stdCalChecked?`<div class="warn-box" style="margin-top:10px">Please confirm the date is clear on the program calendar before proceeding.</div>`:''}
 </div>
 <div class="nav">
   <button class="btn btn-ghost" onclick="restart()">Back</button>
-  <button class="btn btn-green" onclick="step=1;render();scrollTop()">Generate save the date</button>
-</div>`;
-}
- 
-function stdDone() {
-  const body = `Subject: Save the date — ${std.eventTitle||'[Event Title]'}
- 
-Hi [Name],
- 
-Please save the date for an upcoming Cleveland SHRM event!
- 
-Event: ${std.eventTitle||'[Event Title]'}
-Date: ${std.eventDate||'[Date]'}
-Time: ${std.eventAmPm||''}
-Format: ${std.eventType||'[Virtual / In-person]'}
- 
-More details including registration, location, and agenda will follow soon.
- 
-${std.creatorName||'[Your Name]'}
-${std.creatorEmail||''}
-Cleveland SHRM Chapter`;
- 
-  return `<div class="std-pill">Save the date — complete</div>
-<h2>Ready to send!</h2>
-<p class="sub">Copy the email text below and send it to your list.</p>
+  <button class="btn btn-green" onclick="set('stdDone',true);render();scroll()">Generate save the date</button>
+</div>`;}
+
+function stdDone(){
+  const sid=stdEventId();
+  const loc=d.stdType==='In-person'?(d.stdLocKnown==='true'?((d.stdLocName||'')+(d.stdLocAddr?', '+d.stdLocAddr:'')):'TBD — details to follow'):'';
+  const spk=d.stdSpeaker?`\nFeaturing: ${d.stdSpeaker}`:'';
+  const subj=eidSubject(sid,`Save the date — ${d.stdTitle||'[Event Title]'}`);
+  const body=eidHeader(sid)+`Hi [Name],\n\nPlease save the date for an upcoming Cleveland SHRM event!\n\nEvent: ${d.stdTitle||'[Event Title]'}${spk}\nDate: ${d.stdDate||'[Date]'}\nTime: ${d.stdAmPm||''}\nFormat: ${d.stdType||''}${loc?'\nLocation: '+loc:''}\n\nMore details including registration and agenda will follow soon.\n\n${d.stdName||'[Your Name]'}\n${d.stdEmail||''}\nCleveland SHRM Chapter`;
+  return`<div class="std-pill">Save the date — complete</div>
+<h2>Ready to send!</h2><p class="sub">Your save-the-date email is ready below.</p>
+${eidBadge(sid)}
 <div class="card">
-  <div class="card-title">Summary</div>
-  <table class="price-table">
-    <tr><td>Event</td><td>${std.eventTitle||'—'}</td></tr>
-    <tr><td>Date</td><td>${std.eventDate||'—'}</td></tr>
-    <tr><td>Time</td><td>${std.eventAmPm||'—'}</td></tr>
-    <tr><td>Format</td><td>${std.eventType||'—'}</td></tr>
-    <tr><td>Created by</td><td>${std.creatorName||'—'} (${std.creatorEmail||'—'})</td></tr>
-    <tr><td>Calendar checked</td><td>${std.programCalChecked?'Yes ✓':'Not yet'}</td></tr>
-  </table>
-</div>
-<div class="card">
-  <div class="card-title">Save the date email <span class="tag tag-green">Copy &amp; send</span></div>
+  <div class="card-title">Save the date email <span class="tag tag-green">One click to open</span></div>
   <div class="email-preview">${body}</div>
-  <button class="btn btn-ghost btn-sm" onclick="copyText(\`${body.replace(/`/g,'\\`')}\`)">Copy email text</button>
+  <a class="btn btn-primary btn-sm" href="${mailto('',subj,body)}">Open in email app</a>
 </div>
-<div class="info-box">When you're ready to plan the full event, come back and select "Full event planning" from the start.</div>
-<div class="nav">
-  <button class="btn btn-ghost" onclick="step=0;render()">Back</button>
-  <button class="btn btn-primary" onclick="restart()">Plan a new event</button>
-</div>`;
-}
- 
+<div class="nav"><button class="btn btn-ghost" onclick="set('stdDone',false);render()">Back</button><button class="btn btn-primary" onclick="restart()">Plan a new event</button></div>`;}
+
 // ── EVENT STEPS ───────────────────────────────────────────────────────────
-function renderEvent() {
-  const views = [eS0,eS1,eS2,eS3,eS4,eS5,eS6,eS7,eS8];
-  return prog() + views[Math.min(step,8)]();
-}
- 
-function eS0() {
-  return `<div class="step-pill">Step 1 of 9 — Event basics</div>
-<h2>Let's plan your event</h2><p class="sub">Start with your info.</p>
+function renderEvent(){const views=[eS0,eS1,eS2,eS3,eS4,eS5,eS6,eS7,eS8];return prog()+views[Math.min(step,8)]();}
+
+function eS0(){return`<div class="pill">Step 1 of 9 — Event basics</div>
+<h2>Let's plan your event</h2><p class="sub">Start with your contact info and event type.</p>
 <div class="card">
   <div class="field"><label>Your name</label>${inp('creatorName','Jane Smith')}</div>
   <div class="field"><label>Your email</label>${inp('creatorEmail','jane@clevelandshrm.org','email')}</div>
+  <hr><div class="field"><label>Event type</label></div>${radioGroup('eventType',['Virtual','In-person'])}
+</div>${eNav()}`;}
+
+function eS1(){
+  const warn6=isVirtual()&&within6Weeks();
+  const eid=eventId();
+  const showId=d.eventTitle&&d.eventDate;
+  return`<div class="pill">Step 2 of 9 — Date &amp; time</div>
+<h2>Event date &amp; time</h2><p class="sub">Set your date and choose how you'd like to enter the time.</p>
+${showId?eidBadge(eid):''}
+<div class="card">
+  <div class="field"><label>Event title</label><input type="text" placeholder="e.g. October Lunch & Learn" value="${(d.eventTitle||'').replace(/"/g,'&quot;')}" oninput="set('eventTitle',this.value);render()"></div>
+  <div class="field"><label>Event date</label><input type="date" value="${d.eventDate||''}" oninput="set('eventDate',this.value);render()"></div>
+  ${warn6?`<div class="warn-box">⚠️ This date is within 6 weeks — outside the standard planning window for virtual events. You can still proceed, but please confirm with the programming committee.</div>`:''}
   <hr>
-  <div class="field"><label>Event type</label></div>
-  ${radioGroup('eventType',['Virtual','In-person'])}
-</div>${eNav()}`;
-}
- 
-function eS1() {
-  return `<div class="step-pill">Step 2 of 9 — Save the date</div>
-<h2>Event title &amp; date</h2><p class="sub">These details go on the save-the-date and calendar.</p>
-<div class="card">
-  <div class="field"><label>Event title</label>${inp('eventTitle','e.g. October Lunch & Learn')}</div>
-  <div class="row2">
-    <div class="field"><label>Event date</label>${inp('eventDate','','date')}</div>
-    <div class="field"><label>Time of day</label>${radioGroup('eventAmPm',['am','midday','pm'])}</div>
+  <div class="field"><label>How would you like to set the time?</label></div>
+  <div class="radio-group">
+    <div class="radio-btn${d.timeMode==='helper'?' sel':''}" onclick="set('timeMode','helper');render()">Help me pick (AM / Midday / PM)</div>
+    <div class="radio-btn${d.timeMode==='specific'?' sel':''}" onclick="set('timeMode','specific');render()">I know the exact times</div>
   </div>
-  <div class="check-item${d.programCalChecked?' sel':''}" onclick="toggleCheck('programCalChecked')">
-    <div class="chk">${ckSvg()}</div>
-    <span class="check-label">Program calendar date has been checked for conflicts</span>
-  </div>
-  ${!d.programCalChecked ? `<div class="warn-box" style="margin-top:10px">Please confirm the date is clear on the chapter program calendar.</div>` : ''}
-</div>${eNav()}`;
-}
- 
-function eS2() {
-  const totalMins = calcTotalMins();
-  const blocks = SESSION_ITEMS.map(name => {
-    const b = d.sessionBlocks[name];
-    const blockMins = (b.enabled && b.startTime && b.endTime) ? Math.max(0, timeToMins(b.endTime)-timeToMins(b.startTime)) : 0;
-    return `<div class="session-block">
-  <div class="session-header${b.enabled?' open':''}" onclick="toggleSession('${name}')">
-    <div class="chk"${b.enabled?' style="background:#185FA5;border-color:#185FA5"':''}>${b.enabled?ckSvg():''}</div>
+  ${d.timeMode==='helper'?radioGroup('eventAmPm',['AM','Midday','PM']):''}
+  ${d.timeMode==='specific'?`<div class="row2"><div class="field"><label>Start time</label>${inp('startTime','','time')}</div><div class="field"><label>End time</label>${inp('endTime','','time')}</div></div>`:''}
+  <div class="check-item${d.programCalChecked?' sel':''}" onclick="tog('programCalChecked')"><div class="chk">${ck()}</div><span class="check-label">Program calendar date has been checked for conflicts</span></div>
+  ${!d.programCalChecked?`<div class="warn-box" style="margin-top:10px">Please confirm the date is clear on the chapter program calendar.</div>`:''}
+</div>${eNav()}`;}
+
+function eS2(){
+  const tot=totalMins();
+  const blocks=SESSION_ITEMS.map(name=>{
+    const b=d.sessionBlocks[name];const mins=parseInt(b.duration)||0;
+    return`<div class="session-block">
+  <div class="session-hdr${b.enabled?' open':''}" onclick="togSession('${name}')">
+    <div class="chk"${b.enabled?' style="background:var(--blue);border-color:var(--blue)"':''}>${b.enabled?ck():''}</div>
     <span class="session-name">${name}</span>
-    ${b.enabled && blockMins > 0 ? `<span class="session-mins">${minsToStr(blockMins)}</span>` : ''}
+    ${b.enabled&&mins>0?`<span class="session-dur">${minsToStr(mins)}</span>`:''}
   </div>
-  ${b.enabled ? `<div class="session-times">
-    <div class="field"><label>Start time</label><input type="time" value="${b.startTime||''}" oninput="setSession('${name}','startTime',this.value)"></div>
-    <div class="field"><label>End time</label><input type="time" value="${b.endTime||''}" oninput="setSession('${name}','endTime',this.value)"></div>
-  </div>` : ''}
-</div>`;
-  }).join('');
- 
-  return `<div class="step-pill">Step 3 of 9 — Schedule</div>
-<h2>Event schedule</h2>
-<p class="sub">Select each session block and enter its start and end time. Total program length calculates automatically.</p>
+  ${b.enabled&&!d.sessionHelpMode?`<div class="field" style="margin-top:10px;margin-bottom:0"><label>Duration (minutes)</label><input type="number" min="5" step="5" placeholder="e.g. 30" value="${b.duration||''}" oninput="setSession('${name}',this.value)"></div>`:''}
+</div>`;}).join('');
+  return`<div class="pill">Step 3 of 9 — Schedule</div>
+<h2>Event schedule</h2><p class="sub">Select each session block and enter how long it will run in minutes.</p>
 <div class="card">
-  ${blocks}
-  <div class="total-bar">
-    <span class="total-bar-label">Total program length</span>
-    <span class="total-bar-val" id="total-length">${minsToStr(totalMins)}</span>
-  </div>
-  ${totalMins > 0 ? `<div class="info-box" style="margin-bottom:0">Remember to update your event start and end times to account for this total.</div>` : ''}
-</div>${eNav()}`;
-}
- 
-function eS3() {
-  const isV = d.eventType === 'Virtual';
-  return `<div class="step-pill">Step 4 of 9 — Location</div>
-<h2>${isV ? 'Virtual platform' : 'Venue details'}</h2>
-<p class="sub">${isV ? 'Set up your virtual meeting space.' : 'Confirm your venue logistics.'}</p>
-${isV ? `<div class="card">
-  <div class="field"><label>Platform</label>${radioGroup('venueName',['Zoom','Microsoft Teams','Webex','Other'])}</div>
-  <div class="field"><label>Meeting link</label>${inp('venueAddress','https://zoom.us/j/...')}</div>
-</div>` : `<div class="card">
+  <div class="check-item${d.sessionHelpMode?' sel':''}" onclick="tog('sessionHelpMode')" style="margin-bottom:12px"><div class="chk">${ck()}</div><span class="check-label">I need help — let me just enter a total event duration</span></div>
+  ${d.sessionHelpMode?`<div class="field"><label>Total event duration (minutes)</label>${inp('totalDuration','e.g. 90','number','min="0"')}</div>`:
+  `${blocks}<div class="total-bar"><span class="total-bar-label">Total program length</span><span class="total-bar-val" id="total-dur">${minsToStr(tot)}</span></div>
+  ${tot>0?`<div class="info-box" style="margin-bottom:0">Use this total when confirming your event start and end times.</div>`:''}`}
+</div>${eNav()}`;}
+
+function eS3(){
+  if(isVirtual()){return`<div class="pill">Step 4 of 9 — Platform</div>
+<h2>Virtual platform</h2><p class="sub">Cleveland SHRM uses Zoom for all virtual events.</p>
+<div class="card">
+  <div class="success-box" style="margin-bottom:12px">Platform: <strong>Zoom</strong> — no additional setup needed here. The meeting link will be shared with registrants separately closer to the event.</div>
+  <div class="field"><label>Max attendees</label>${inp('maxAttendees','e.g. 80','number','min="1"')}</div>
+  <div class="info-box" style="margin-bottom:0">Standard virtual max is <strong>100 attendees</strong>. Contact the programming committee if you expect more.</div>
+</div>${eNav()}`;}
+  return`<div class="pill">Step 4 of 9 — Venue</div>
+<h2>Venue details</h2><p class="sub">Confirm your in-person venue logistics.</p>
+<div class="card">
   <div class="field"><label>Venue name</label>${inp('venueName','e.g. Huntington Convention Center')}</div>
   <div class="field"><label>Address</label>${inp('venueAddress','123 Main St, Cleveland, OH')}</div>
   <div class="field"><label>Parking details</label>${inp('venueParking','e.g. Free lot on north side')}</div>
   <div class="field"><label>Venue rental cost ($)</label>${inp('venuePrice','0','number','min="0"')}</div>
-  <a href="https://docs.google.com/spreadsheets/PLACEHOLDER_VENUE" target="_blank" class="sheet-link">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#185FA5" stroke-width="1.2"/><path d="M4 7h6M4 4.5h6M4 9.5h4" stroke="#185FA5" stroke-width="1.1" stroke-linecap="round"/></svg>
-    Venue resource sheet
-  </a>
-</div>`}
-<div class="card">
-  <div class="field"><label>Max attendees (capacity)</label>${inp('maxAttendees','e.g. 60','number','min="1"')}</div>
-</div>${eNav()}`;
-}
- 
-function eS4() {
-  const isBask = d.hrExpertise === 'SHRM BASK';
-  const baskEmail = isBask ? `Subject: SHRM BASK functional report — ${d.eventTitle||'[Event Title]'}
- 
-Hi [BASK Coordinator],
- 
-A SHRM BASK HR expertise designation has been selected for the upcoming event "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
- 
-Please ensure the SHRM functional report is completed for this event.
- 
-Organizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})
- 
-Thank you,
-Cleveland SHRM Event Planning Tool` : '';
- 
-  return `<div class="step-pill">Step 5 of 9 — SHRM BASK</div>
-<h2>SHRM BASK &amp; basket</h2>
-<p class="sub">Select "SHRM BASK" only if this event qualifies for HR expertise credit — this triggers the SHRM functional report requirement.</p>
-<div class="card">
-  <div class="field"><label>Does this event qualify for SHRM BASK credit?</label></div>
-  ${radioGroup('hrExpertise',['SHRM BASK','Not applicable'])}
-  ${isBask ? `<div class="success-box">SHRM BASK selected — the SHRM functional report is required. Copy the email below to notify the BASK coordinator.</div>
-  <div class="field"><label>BASK coordinator email</label>${inp('baskCoordEmail','bask@clevelandshrm.org','email')}</div>
-  <div class="card-title" style="margin-top:4px">BASK notification email <span class="tag tag-blue">Copy &amp; send</span></div>
-  <div class="email-preview">${baskEmail}</div>
-  <button class="btn btn-ghost btn-sm" onclick="copyText(\`${baskEmail.replace(/`/g,'\\`')}\`)">Copy email text</button>`
-  : `<div class="info-box">No SHRM functional report required for this event.</div>`}
+  <a href="${VENUE_SHEET}" target="_blank" class="sheet-link">📄 Venue resource sheet</a>
 </div>
+<div class="card"><div class="field"><label>Max attendees (capacity)</label>${inp('maxAttendees','e.g. 60','number','min="1"')}</div></div>${eNav()}`;}
+
+function eS4(){
+  const hasPDC=d.offerPDC==='Yes';
+  return`<div class="pill">Step 5 of 9 — SHRM PDCs</div>
+<h2>Are you offering SHRM PDCs?</h2>
+<p class="sub">Professional Development Credits require selecting the applicable SHRM learning areas.</p>
 <div class="card">
-  <div class="check-item${d.shrmBasket?' sel':''}" onclick="toggleCheck('shrmBasket')">
-    <div class="chk">${ckSvg()}</div>
-    <span class="check-label">This event includes a SHRM basket</span>
-  </div>
-</div>${eNav()}`;
-}
- 
-function eS5() {
-  return `<div class="step-pill">Step 6 of 9 — Food</div>
-<h2>Food &amp; refreshments</h2><p class="sub">Does this event include food or beverages?</p>
+  ${radioGroup('offerPDC',['Yes','No'])}
+  ${hasPDC?`<hr><div class="field"><label>Select all applicable learning areas</label></div>
+  ${PDC_AREAS.map(a=>`<div class="check-item${d.pdcAreas.includes(a)?' sel':''}" onclick="togArr('pdcAreas','${a}')"><div class="chk">${ck()}</div><span class="check-label">${a}</span></div>`).join('')}
+  ${d.pdcAreas.length===0?`<div class="warn-box" style="margin-top:8px">Please select at least one learning area.</div>`:`<div class="success-box" style="margin-top:8px">${d.pdcAreas.length} area${d.pdcAreas.length>1?'s':''} selected.</div>`}`
+  :`<div class="info-box" style="margin-bottom:0">No PDC documentation required for this event.</div>`}
+</div>
+<div class="card"><div class="check-item${d.shrmBasket?' sel':''}" onclick="tog('shrmBasket')"><div class="chk">${ck()}</div><span class="check-label">This event includes a SHRM basket</span></div></div>${eNav()}`;}
+
+function eS5(){
+  if(isVirtual()){return`<div class="pill">Step 6 of 9 — Food &amp; beverage</div>
+<h2>Food &amp; beverage</h2><div class="info-box">Food &amp; beverage questions don't apply to virtual events. Moving right along!</div>${eNav()}`;}
+  return`<div class="pill">Step 6 of 9 — Food &amp; beverage</div>
+<h2>Food &amp; refreshments</h2><p class="sub">Does this in-person event include food or beverages?</p>
 <div class="card">
-  <div class="field"><label>Will food be served?</label></div>
   ${radioGroup('hasFood',['Yes','No'])}
-  ${d.hasFood==='Yes' ? `<hr>
-  <div class="field"><label>Food type</label></div>
-  ${radioGroup('foodType',['Snacks & coffee','Meal'])}
-  ${d.foodType==='Meal' ? `<div class="field"><label>Who will cater?</label>${inp('caterWho','Catering company or contact name')}</div>
-  <a href="https://docs.google.com/spreadsheets/PLACEHOLDER_FOOD" target="_blank" class="sheet-link">
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="12" height="12" rx="2" stroke="#185FA5" stroke-width="1.2"/><path d="M4 7h6M4 4.5h6M4 9.5h4" stroke="#185FA5" stroke-width="1.1" stroke-linecap="round"/></svg>
-    Food &amp; catering vendor sheet
-  </a>` : ''}
-  <div class="field" style="margin-top:8px"><label>Estimated food cost per person ($)</label>${inp('foodCostPer','0','number','min="0"')}</div>` : ''}
-</div>${eNav()}`;
-}
- 
-function eS6() {
-  const isPanel = d.speakerType === 'Panel';
-  return `<div class="step-pill">Step 7 of 9 — Speaker</div>
-<h2>Speaker details</h2><p class="sub">A bio &amp; photo request email will be generated on the summary page.</p>
+  ${d.hasFood==='Yes'?`<hr>${radioGroup('foodType',['Snacks & coffee','Meal'])}
+  ${d.foodType==='Meal'?`<div class="field"><label>Who will cater?</label>${inp('caterWho','Catering company or contact')}</div>
+  <a href="https://docs.google.com/spreadsheets/PLACEHOLDER_FOOD" target="_blank" class="sheet-link">🍽️ Food &amp; catering vendor sheet</a>`:''}
+  <div class="field" style="margin-top:8px"><label>Estimated food cost per person ($)</label>${inp('foodCostPer','0','number','min="0"')}</div>`:''}
+</div>${eNav()}`;}
+
+function eS6(){
+  const isPanel=d.speakerType==='Panel';
+  const eid=eventId();
+  return`<div class="pill">Step 7 of 9 — Speaker</div>
+<h2>Speaker details</h2>
+<p class="sub">Upload files if you have them — a bio &amp; photo request email will be generated on the summary page if not.</p>
 <div class="card">
-  <div class="field"><label>Speaker format</label></div>
   ${radioGroup('speakerType',['Individual','Panel'])}
-  ${d.speakerType ? `<hr>
-  <div class="field"><label>Speaker fee</label></div>
-  ${radioGroup('speakerFee',['Free','Paid'])}
-  ${d.speakerFee==='Paid' ? `<div class="field"><label>Speaker fee amount ($)</label>${inp('speakerFeeAmt','0','number','min="0"')}</div>
-  ${(parseFloat(d.speakerFeeAmt)||0) >= 1000
-    ? `<div class="danger-box">Fee is $1,000 or more — board approval required. An approval email will be generated on the summary page.</div>`
-    : `<div class="success-box">Fee is under $1,000 — no additional approval needed.</div>`}` : ''}
-  <hr>
+  ${d.speakerType?`<hr>
   <div class="card-title">Primary speaker</div>
+  <div class="row2"><div class="field"><label>Name</label>${inp('spkName','Speaker name')}</div><div class="field"><label>Email</label>${inp('spkEmail','speaker@email.com','email')}</div></div>
+  <div class="row2"><div class="field"><label>Company</label>${inp('spkCompany','Company')}</div><div class="field"><label>Title</label>${inp('spkTitle','Job title')}</div></div>
   <div class="row2">
-    <div class="field"><label>Name</label>${inp('speakerName','Speaker name')}</div>
-    <div class="field"><label>Email</label>${inp('speakerEmail','speaker@email.com','email')}</div>
+    <div class="field"><label>Photo <span class="opt-label">(optional)</span></label><input type="file" accept="image/*" onchange="set('spkPhotoFile',this.files[0])"></div>
+    <div class="field"><label>Bio doc <span class="opt-label">(optional)</span></label><input type="file" accept=".pdf,.doc,.docx,.txt" onchange="set('spkBioFile',this.files[0])"></div>
   </div>
-  <div class="row2">
-    <div class="field"><label>Company</label>${inp('speakerCompany','Company')}</div>
-    <div class="field"><label>Title</label>${inp('speakerTitle','Job title')}</div>
-  </div>
-  ${isPanel ? `<hr>
-  <div class="card-title">Panelist 2 <span class="tag tag-amber">Panel</span></div>
-  <div class="row2">
-    <div class="field"><label>Name</label>${inp('spk2Name','Panelist name')}</div>
-    <div class="field"><label>Email</label>${inp('spk2Email','panelist@email.com','email')}</div>
-  </div>
-  <div class="row2">
-    <div class="field"><label>Company</label>${inp('spk2Company','Company')}</div>
-    <div class="field"><label>Title</label>${inp('spk2Title','Job title')}</div>
-  </div>` : ''}` : ''}
-</div>${eNav()}`;
-}
- 
-function eS7() {
-  return `<div class="step-pill">Step 8 of 9 — Descriptions</div>
+  <hr>
+  <div class="field"><label>Speaker fee</label></div>
+  ${radioGroup('spkFee',['Free','Paid'])}
+  ${d.spkFee==='Paid'?`<div class="field"><label>Fee amount ($)</label>${inp('spkFeeAmt','0','number','min="0"')}</div>
+  ${(parseFloat(d.spkFeeAmt)||0)>=1000?`<div class="danger-box">Fee is $1,000 or more — board approval required. An approval email will be generated on the summary page.</div>`:`<div class="success-box">Under $1,000 — no board approval needed.</div>`}`:''}
+  ${isPanel?`<hr>
+  <div class="card-title">Panelists <span class="tag tag-amber">up to 6</span></div>
+  ${d.panelists.map((p,i)=>`<div class="sub-card">
+    <div class="sub-card-label">Panelist ${i+1}</div>
+    <span class="sub-card-remove" onclick="removePanelist(${i})">Remove</span>
+    <div class="row2"><div class="field"><label>Name</label><input type="text" placeholder="Name" value="${(p.name||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'name',this.value)"></div><div class="field"><label>Email</label><input type="email" placeholder="email@co.com" value="${(p.email||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'email',this.value)"></div></div>
+    <div class="row2"><div class="field"><label>Company</label><input type="text" placeholder="Company" value="${(p.company||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'company',this.value)"></div><div class="field"><label>Title</label><input type="text" placeholder="Title" value="${(p.title||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'title',this.value)"></div></div>
+    <div class="row2"><div class="field"><label>Photo <span class="opt-label">(optional)</span></label><input type="file" accept="image/*" onchange="setPanelist(${i},'photoFile',this.files[0])"></div><div class="field"><label>Bio doc <span class="opt-label">(optional)</span></label><input type="file" accept=".pdf,.doc,.docx,.txt" onchange="setPanelist(${i},'bioFile',this.files[0])"></div></div>
+  </div>`).join('')}
+  ${d.panelists.length<6?`<button class="btn btn-ghost btn-sm" onclick="addPanelist()" style="margin-top:4px">+ Add panelist</button>`:`<div class="info-box" style="margin-bottom:0">Maximum of 6 panelists reached.</div>`}`:''}
+  `:''}
+</div>${eNav()}`;}
+
+function eS7(){return`<div class="pill">Step 8 of 9 — Descriptions</div>
 <h2>Event descriptions</h2><p class="sub">These go on the website, email, and marketing materials.</p>
 <div class="card">
   <div class="field"><label>Short description <span class="tag tag-blue">under 500 words</span></label>${ta('shortDesc','Brief summary for calendar listings...')}</div>
   <div class="field"><label>Full description <span class="tag tag-blue">500+ words</span></label>${ta('fullDesc','Detailed description for the website...')}</div>
   <div class="field"><label>Learning objectives <span class="tag tag-amber">required — at least 3</span></label>${ta('learningObj','1. Attendees will be able to...\n2.\n3.')}</div>
-</div>
+</div>${eNav('View summary')}`;}
+
+function eS8(){
+  const eid=eventId();
+  const att=parseInt(d.estimatedAttendance)||0;
+  const maxAtt=parseInt(d.maxAttendees)||0;
+  const calcAtt=att||(maxAtt>0?Math.round(maxAtt*0.6):0);
+  const food=parseFloat(d.foodCostPer)||0;
+  const venue=parseFloat(d.venuePrice)||0;
+  const spkFee=d.spkFee==='Paid'?(parseFloat(d.spkFeeAmt)||0):0;
+  const foodTotal=isVirtual()?0:food*calcAtt;
+  const totalCost=foodTotal+venue+spkFee;
+  const costPer=calcAtt>0?totalCost/calcAtt:0;
+  const needsApproval=d.spkFee==='Paid'&&spkFee>=1000;
+  const allSpeakers=[{name:d.spkName,email:d.spkEmail,title:d.spkTitle,company:d.spkCompany},...d.panelists.map(p=>({name:p.name,email:p.email,title:p.title,company:p.company}))].filter(s=>s.name);
+  const sessionSummary=d.sessionHelpMode?`  Total duration: ${d.totalDuration||'—'} minutes`:SESSION_ITEMS.filter(s=>d.sessionBlocks[s].enabled).map(s=>`  ${s}: ${d.sessionBlocks[s].duration||'—'} min`).join('\n')||'  Not entered';
+
+  const bioSubj=eidSubject(eid,`Bio & headshot request — ${d.eventTitle||'[Event Title]'}`);
+  const bioBody=eidHeader(eid)+`Hi [Speaker Name],\n\nThank you for agreeing to ${d.speakerType==='Panel'?'participate in the panel':'speak'} at our upcoming Cleveland SHRM event, "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.\n\nCould you please send us:\n• A professional headshot (high resolution)\n• A brief bio (150-200 words)\n• Your title and company\n\nPlease reply by [DATE].\n\n${d.creatorName||'[Your Name]'}\nCleveland SHRM`;
+
+  const approvalSubj=eidSubject(eid,`Board approval needed — speaker fee`);
+  const approvalBody=eidHeader(eid)+`Hi [Board Member],\n\nA speaker fee of ${fmt(spkFee)} has been entered for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.\n\nPer chapter policy, fees of $1,000 or more require board approval.\n\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||''})\nSpeaker: ${d.spkName||'[Name]'} — ${d.spkTitle||''} at ${d.spkCompany||''}\n\nPlease reply to approve.\n\nCleveland SHRM Event Planning Tool`;
+
+  const summarySubj=eidSubject(eid,`Event planning submission — ${d.eventTitle||'[Event Title]'}`);
+  const summaryBody=eidHeader(eid)+`Hi Halle,\n\nHere is a new event planning submission for your review.\n\n── EVENT DETAILS ──\nTitle: ${d.eventTitle||'—'}\nDate: ${d.eventDate||'—'}\nTime: ${d.timeMode==='helper'?(d.eventAmPm||'—'):(d.startTime||'—')+' – '+(d.endTime||'—')}\nFormat: ${d.eventType||'—'}\nLocation: ${isVirtual()?'Zoom (virtual)':((d.venueName||'—')+', '+(d.venueAddress||''))}\nMax capacity: ${d.maxAttendees||'—'}\nSHRM PDCs: ${d.offerPDC==='Yes'?'Yes — '+d.pdcAreas.join(', '):'No'}\nFood: ${isVirtual()?'N/A (virtual)':(d.hasFood==='Yes'?(d.foodType||'Yes'):'No')}\n\n── SCHEDULE ──\n${sessionSummary}\nTotal: ${minsToStr(totalMins())}\n\n── SPEAKER ──\nFormat: ${d.speakerType||'—'}\nPrimary: ${d.spkName||'—'} (${d.spkTitle||''} at ${d.spkCompany||''})\nEmail: ${d.spkEmail||'—'}\nFee: ${d.spkFee==='Paid'?fmt(spkFee):'Free'}\n${d.panelists.length>0?'Panelists:\n'+d.panelists.map((p,i)=>`  ${i+1}. ${p.name||'—'} — ${p.title||''} at ${p.company||''} (${p.email||''})`).join('\n'):''}\n\n── COST SUMMARY ──\n${!isVirtual()&&d.hasFood==='Yes'?`Food (${fmt2(food)} x ${calcAtt} people): ${fmt(foodTotal)}\n`:''}${!isVirtual()&&venue>0?`Venue rental: ${fmt(venue)}\n`:''}${spkFee>0?`Speaker fee: ${fmt(spkFee)}\n`:''}Total estimated cost: ${fmt(totalCost)}\nAttendee estimate: ${calcAtt} (${att?'entered directly':'60% of '+maxAtt+' max capacity'})\nCost per person: ${calcAtt>0?fmt2(costPer):'—'}\n\n── SPONSORS ──\n${d.hasSponsors==='Yes'&&d.sponsors.length>0?d.sponsors.map(s=>`  ${s.company||'—'}: ${s.sponsoring||'—'} (${s.contactName||''} / ${s.contactEmail||''})`).join('\n'):(d.hasSponsors==='help'?'Sponsor help requested':'No sponsors')}\n\n── DESCRIPTIONS ──\nShort: ${d.shortDesc||'—'}\nLearning objectives:\n${d.learningObj||'—'}\n\nSubmitted by: ${d.creatorName||'—'} (${d.creatorEmail||'—'})\nCleveland SHRM Event Planning Tool`;
+
+  const sponsorHelpSubj=eidSubject(eid,'Sponsor help needed');
+  const sponsorHelpBody=eidHeader(eid)+`Hi,\n\nThe organizer of "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'} is looking for sponsor assistance.\n\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})\n\nPlease reach out to connect them with potential sponsors.\n\nCleveland SHRM Event Planning Tool`;
+
+  const pdcSubj=eidSubject(eid,'SHRM PDC notification');
+  const pdcBody=eidHeader(eid)+`Hi [PDC Coordinator],\n\nThe following event has been submitted offering SHRM PDCs and requires the functional report to be completed.\n\nEvent: ${d.eventTitle||'[Event Title]'}\nDate: ${d.eventDate||'[Date]'}\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})\nLearning areas: ${d.pdcAreas.join(', ')||'[See submission]'}\n\nThank you,\nCleveland SHRM Event Planning Tool`;
+
+  return`<div class="pill">Step 9 of 9 — Summary</div>
+<h2>Event summary</h2>
+<p class="sub">Review your cost breakdown, generate your emails, and submit to Halle.</p>
+${eidBadge(eid)}
+<div class="info-box">Every email below includes the Event ID <strong>${eid}</strong> so all correspondence can be easily tracked together.</div>
+
+${needsApproval?`<div class="danger-box">⚠️ Board approval required — speaker fee of ${fmt(spkFee)} exceeds $1,000. Send the approval email below before confirming with the speaker.</div>`:''}
+
 <div class="card">
-  <div class="check-item${d.isSignature?' sel':''}" onclick="toggleCheck('isSignature')">
-    <div class="chk">${ckSvg()}</div>
-    <span class="check-label">This is a signature event (break-even pricing)</span>
+  <div class="card-title">Cost summary</div>
+  <div class="field"><label>Estimated attendance <span class="tag tag-amber">optional — overrides 60% of max</span></label>${inp('estimatedAttendance','Leave blank to use 60% of max capacity','number','min="1"')}</div>
+  ${calcAtt>0?`<table class="price-table">
+    ${!isVirtual()&&venue>0?`<tr><td>Venue rental</td><td>${fmt(venue)}</td></tr>`:''}
+    ${!isVirtual()&&d.hasFood==='Yes'?`<tr><td>Food (${fmt2(food)} × ${calcAtt} people)</td><td>${fmt(foodTotal)}</td></tr>`:''}
+    ${spkFee>0?`<tr><td>Speaker fee</td><td>${fmt(spkFee)}</td></tr>`:''}
+    <tr class="total-row"><td>Total estimated cost</td><td>${fmt(totalCost)}</td></tr>
+    <tr><td style="color:var(--text2)">Cost per person</td><td>${fmt2(costPer)}</td></tr>
+  </table>
+  <p class="sub" style="margin-top:8px">Based on ${att?'your entered estimate of '+att:Math.round(maxAtt*0.6)+' (60% of '+maxAtt+' max)'}. Halle will work with you on final pricing.</p>`
+  :`<div class="info-box" style="margin-bottom:0">Enter max attendees in Step 4 or an estimate above to see cost calculations.</div>`}
+</div>
+
+<div class="card">
+  <div class="card-title">Sponsors</div>
+  <div class="radio-group">
+    <div class="radio-btn${d.hasSponsors==='Yes'?' sel':''}" onclick="set('hasSponsors','Yes');render()">Yes</div>
+    <div class="radio-btn${d.hasSponsors==='No'?' sel':''}" onclick="set('hasSponsors','No');render()">No</div>
+    <div class="radio-btn${d.hasSponsors==='help'?' sel':''}" onclick="set('hasSponsors','help');window.open('${SPONSOR_SHEET}','_blank');render()">Please help find one</div>
   </div>
-  <p class="sub" style="margin-top:8px">Signature events price to break even. All others target 20% profit.</p>
-</div>${eNav('View summary')}`;
-}
- 
-function sponsorBlock() {
-  const hasSp = d.hasSponsors === 'Yes';
-  const showEmail = hasSp && d.sponsors.length > 0;
-  const spEmail = showEmail ? buildSponsorEmail() : '';
- 
-  return `<div class="card">
-  <div class="card-title">Sponsors <span class="tag tag-purple">Optional</span></div>
-  <div class="field"><label>Does this event have sponsors?</label></div>
-  ${radioGroup('hasSponsors',['Yes','No'])}
-  ${hasSp ? `<hr>
-  ${d.sponsors.map((sp,i) => `<div class="sponsor-card">
-    <div class="sponsor-num">Sponsor ${i+1}</div>
-    <span class="sponsor-remove" onclick="removeSponsor(${i})">Remove</span>
-    <div class="row2">
-      <div class="field"><label>Company</label><input type="text" placeholder="Acme Corp" value="${(sp.company||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'company',this.value);render()"></div>
-      <div class="field"><label>Contact name</label><input type="text" placeholder="Contact name" value="${(sp.contactName||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'contactName',this.value);render()"></div>
-    </div>
-    <div class="row2">
-      <div class="field"><label>Contact email</label><input type="email" placeholder="contact@co.com" value="${(sp.contactEmail||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'contactEmail',this.value);render()"></div>
-      <div class="field"><label>Sponsoring what?</label><input type="text" placeholder="e.g. Food, AV, venue" value="${(sp.sponsoring||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'sponsoring',this.value);render()"></div>
-    </div>
+  ${d.hasSponsors==='Yes'?`${d.sponsors.map((sp,i)=>`<div class="sub-card">
+    <div class="sub-card-label">Sponsor ${i+1}</div>
+    <span class="sub-card-remove" onclick="removeSponsor(${i})">Remove</span>
+    <div class="row2"><div class="field"><label>Company</label><input type="text" placeholder="Acme Corp" value="${(sp.company||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'company',this.value)"></div><div class="field"><label>Contact name</label><input type="text" placeholder="Contact" value="${(sp.contactName||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'contactName',this.value)"></div></div>
+    <div class="row2"><div class="field"><label>Email</label><input type="email" placeholder="contact@co.com" value="${(sp.contactEmail||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'contactEmail',this.value)"></div><div class="field"><label>Sponsoring what?</label><input type="text" placeholder="e.g. Food, AV" value="${(sp.sponsoring||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'sponsoring',this.value)"></div></div>
   </div>`).join('')}
-  <button class="btn btn-ghost btn-sm" onclick="addSponsor()" style="margin-bottom:12px">+ Add sponsor</button>
-  ${showEmail ? `<hr>
-  <div class="card-title">Sponsor coordinator email <span class="tag tag-purple">Copy &amp; send</span></div>
-  <div class="field"><label>Sponsor coordinator email address</label><input type="email" placeholder="sponsorcoord@clevelandshrm.org" value="${(d.sponsorCoordEmail||'').replace(/"/g,'&quot;')}" oninput="set('sponsorCoordEmail',this.value);render()"></div>
-  <div class="email-preview">${spEmail}</div>
-  <button class="btn btn-ghost btn-sm" onclick="copySponsorEmail()">Copy email text</button>` : ''}` : ''}
-</div>`;
-}
- 
-function buildSponsorEmail() {
-  const lines = d.sponsors.map((sp,i) =>
-    `Sponsor ${i+1}:\n  Company: ${sp.company||'[Company]'}\n  Contact: ${sp.contactName||'[Name]'} (${sp.contactEmail||'[Email]'})\n  Sponsoring: ${sp.sponsoring||'[TBD]'}`
-  ).join('\n\n');
-  return `Subject: Sponsor info — ${d.eventTitle||'[Event Title]'} on ${d.eventDate||'[Date]'}
- 
-Hi [Sponsor Coordinator],
- 
-The following sponsors have been confirmed for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}, organized by ${d.creatorName||'[Organizer]'} (${d.creatorEmail||''}).
- 
-${lines}
- 
-Please follow up with each contact to finalize details, materials, and recognition.
- 
-Cleveland SHRM Event Planning Tool`;
-}
- 
-function copySponsorEmail() { copyText(buildSponsorEmail()); }
- 
-function eS8() {
-  const c = calcCosts();
-  const needsApproval = d.speakerFee==='Paid' && (parseFloat(d.speakerFeeAmt)||0) >= 1000;
-  const att = parseInt(d.estimatedAttendance)||0;
- 
-  const sessionSummary = SESSION_ITEMS.filter(s => d.sessionBlocks[s].enabled).map(s => {
-    const b = d.sessionBlocks[s];
-    const mins = b.startTime && b.endTime ? Math.max(0, timeToMins(b.endTime)-timeToMins(b.startTime)) : 0;
-    return `  ${s}: ${b.startTime||'—'} – ${b.endTime||'—'}${mins > 0 ? ' ('+minsToStr(mins)+')' : ''}`;
-  }).join('\n');
- 
-  const bioEmail = `Subject: Bio & headshot request — ${d.eventTitle||'[Event Title]'}
- 
-Hi ${d.speakerName||'[Speaker Name]'},
- 
-Thank you for agreeing to speak at our upcoming Cleveland SHRM event, "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
- 
-We'd love to feature you in our marketing! Could you please send us:
-• A professional headshot (high resolution preferred)
-• A brief bio (150–200 words)
-• Your title and company: ${d.speakerTitle||'[Title]'} at ${d.speakerCompany||'[Company]'}
- 
-Please reply by [DATE].
- 
-${d.creatorName||'[Your Name]'}
-Cleveland SHRM`;
- 
-  const approvalEmail = `Subject: Board approval needed — speaker fee for ${d.eventTitle||'[Event Title]'}
- 
-Hi [Board Member],
- 
-A speaker fee of ${fmt(parseFloat(d.speakerFeeAmt)||0)} has been entered for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
- 
-Per chapter policy, fees of $1,000 or more require board approval before confirming with the speaker.
- 
-Organizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})
-Speaker: ${d.speakerName||'[Name]'} — ${d.speakerTitle||''} at ${d.speakerCompany||''}
- 
-Please reply to approve or request more information.
- 
-Cleveland SHRM Event Planning Tool`;
- 
-  const summaryEmail = `Subject: Event planning summary — ${d.eventTitle||'[Event Title]'}
- 
-Hi ${d.creatorName||''},
- 
-Here is your planning summary for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.
- 
-FORMAT: ${d.eventType||''}
-LOCATION: ${d.eventType==='Virtual' ? (d.venueAddress||'[Link]') : (d.venueName||'[Venue]')+', '+(d.venueAddress||'')}
-MAX CAPACITY: ${d.maxAttendees||'[TBD]'}
-EST. ATTENDANCE: ${d.estimatedAttendance||'[TBD]'}
-SPEAKER: ${d.speakerName||'[TBD]'} — ${d.speakerTitle||''} at ${d.speakerCompany||''}
-SHRM BASK: ${d.hrExpertise==='SHRM BASK' ? 'Yes — functional report required' : 'Not applicable'}
-FOOD: ${d.hasFood==='Yes' ? (d.foodType||'') : 'None'}
-SPONSORS: ${d.hasSponsors==='Yes' && d.sponsors.length > 0 ? d.sponsors.map(s=>s.company||'[Company]').join(', ') : 'None'}
- 
-SCHEDULE:
-${sessionSummary||'  Not entered'}
-Total program length: ${minsToStr(calcTotalMins())}
- 
-PRICING SUMMARY
-Total estimated cost: ${fmt(c.totalCost)}
-Member price: ${fmt2(c.memberPrice)} per person
-Non-member price: ${fmt2(c.nonMemberPrice)} per person
-Projected revenue: ${fmt(c.projRevenue)}
-Pricing goal: ${d.isSignature ? 'Break even (signature event)' : '20% profit'}
- 
-Cleveland SHRM Event Planning Tool`;
- 
-  return `<div class="step-pill">Step 9 of 9 — Summary</div>
-<h2>Event planning summary</h2>
-<p class="sub">Review everything, collect your emails, and you're done.</p>
- 
-${needsApproval ? `<div class="danger-box">Board approval required — speaker fee of ${fmt(parseFloat(d.speakerFeeAmt)||0)} exceeds $1,000. Send the approval email below before confirming with the speaker.</div>` : ''}
- 
-<div class="card">
-  <div class="card-title">Cost breakdown &amp; pricing</div>
-  <div class="field">
-    <label>Estimated attendance <span class="tag tag-amber">used for pricing math</span></label>
-    ${inp('estimatedAttendance','e.g. 45','number','min="1"')}
-  </div>
-  ${att > 0 ? `
-  <table class="price-table">
-    ${c.venue > 0 ? `<tr><td>Venue rental</td><td>${fmt(c.venue)}</td></tr>` : ''}
-    ${d.hasFood==='Yes' ? `<tr><td>Food (${fmt2(parseFloat(d.foodCostPer)||0)} × ${att} people)</td><td>${fmt(c.food*att)}</td></tr>` : ''}
-    ${c.spkFee > 0 ? `<tr><td>Speaker fee</td><td>${fmt(c.spkFee)}</td></tr>` : ''}
-    <tr class="total-row"><td>Total estimated cost</td><td>${fmt(c.totalCost)}</td></tr>
-  </table>
-  <hr>
-  <div class="card-title" style="margin-top:8px">Recommended pricing <span class="tag ${d.isSignature?'tag-blue':'tag-green'}">${d.isSignature?'Signature — break even':'20% profit target'}</span></div>
-  <div class="sum-grid">
-    <div class="sum-card"><div class="sum-num">${fmt2(c.memberPrice)}</div><div class="sum-label">Member price</div></div>
-    <div class="sum-card"><div class="sum-num">${fmt2(c.nonMemberPrice)}</div><div class="sum-label">Non-member price</div></div>
-    <div class="sum-card"><div class="sum-num">${fmt(c.projRevenue)}</div><div class="sum-label">Projected revenue</div></div>
-    <div class="sum-card"><div class="sum-num">${fmt(c.projRevenue-c.totalCost)}</div><div class="sum-label">Projected ${c.projRevenue-c.totalCost>=0?'profit':'loss'}</div></div>
-  </div>
-  <p class="sub" style="margin-top:8px">Based on ${att} estimated attendees — 75% members at 50% off non-member price.</p>` :
-  `<div class="info-box" style="margin-bottom:0">Enter your estimated attendance above to calculate pricing.</div>`}
+  <button class="btn btn-ghost btn-sm" onclick="addSponsor()" style="margin-bottom:4px">+ Add sponsor</button>`:''}
+  ${d.hasSponsors==='help'?`<div class="warn-box" style="margin-top:8px">The sponsor resource sheet has been opened in a new tab. Use the button below to notify the sponsor coordinator.</div>
+  <a class="btn btn-ghost btn-sm" href="${mailto('',sponsorHelpSubj,sponsorHelpBody)}" style="margin-top:4px">Open sponsor help email</a>`:''}
 </div>
- 
+
+${d.spkName?`<div class="card">
+  <div class="card-title">Bio &amp; photo request <span class="tag tag-blue">Send to speaker(s)</span></div>
+  <div class="email-preview">${bioBody}</div>
+  <a class="btn btn-ghost btn-sm" href="${mailto(allSpeakers.map(s=>s.email).filter(Boolean).join(','),bioSubj,bioBody)}">Open bio request email</a>
+</div>`:''}
+
+${d.offerPDC==='Yes'?`<div class="card">
+  <div class="card-title">PDC coordinator notification <span class="tag tag-blue">Send to PDC coordinator</span></div>
+  <div class="email-preview">${pdcBody}</div>
+  <a class="btn btn-ghost btn-sm" href="${mailto('',pdcSubj,pdcBody)}">Open PDC notification email</a>
+</div>`:''}
+
+${needsApproval?`<div class="card">
+  <div class="card-title">Board approval <span class="tag tag-red">Required</span></div>
+  <div class="email-preview">${approvalBody}</div>
+  <a class="btn btn-ghost btn-sm" href="${mailto('',approvalSubj,approvalBody)}">Open approval email</a>
+</div>`:''}
+
 <div class="card">
-  <div class="card-title">Event snapshot</div>
-  <table class="price-table">
-    <tr><td>Event</td><td>${d.eventTitle||'—'}</td></tr>
-    <tr><td>Date</td><td>${d.eventDate||'—'}</td></tr>
-    <tr><td>Format</td><td>${d.eventType||'—'}</td></tr>
-    <tr><td>Location</td><td>${d.eventType==='Virtual'?(d.venueAddress||'—'):(d.venueName||'—')}</td></tr>
-    <tr><td>Speaker</td><td>${d.speakerName||'—'} ${d.speakerType?'('+d.speakerType+')':''}</td></tr>
-    <tr><td>SHRM BASK</td><td>${d.hrExpertise==='SHRM BASK'?'Yes — report required':'Not applicable'}</td></tr>
-    <tr><td>Food</td><td>${d.hasFood==='Yes'?(d.foodType||'Yes'):'None'}</td></tr>
-    <tr><td>Max capacity</td><td>${d.maxAttendees||'—'}</td></tr>
-    <tr><td>Est. attendance</td><td>${d.estimatedAttendance||'—'}</td></tr>
-    <tr><td>Total program length</td><td>${minsToStr(calcTotalMins())}</td></tr>
-    <tr><td>Sponsors</td><td>${d.hasSponsors==='Yes'&&d.sponsors.length>0?d.sponsors.map(s=>s.company||'[Company]').join(', '):'None'}</td></tr>
-  </table>
+  <div class="card-title">Submit to Halle <span class="tag tag-green">Final step</span></div>
+  <p class="sub" style="margin-bottom:12px">Clicking below opens an email pre-addressed to <strong>admin@clevelandshrm.com</strong> with all of your event details. Just hit send!</p>
+  <div class="email-preview">${summaryBody}</div>
+  <a class="btn btn-primary" href="${mailto(ADMIN_EMAIL,summarySubj,summaryBody)}">Open &amp; send to Halle</a>
 </div>
- 
-${sponsorBlock()}
- 
-${d.speakerName ? `<div class="card">
-  <div class="card-title">Bio &amp; photo request <span class="tag tag-blue">Copy &amp; send to speaker</span></div>
-  <div class="email-preview">${bioEmail}</div>
-  <button class="btn btn-ghost btn-sm" onclick="copyText(\`${bioEmail.replace(/`/g,'\\`')}\`)">Copy email text</button>
-</div>` : ''}
- 
-${needsApproval ? `<div class="card">
-  <div class="card-title">Board approval email <span class="tag tag-red">Required</span></div>
-  <div class="email-preview">${approvalEmail}</div>
-  <button class="btn btn-ghost btn-sm" onclick="copyText(\`${approvalEmail.replace(/`/g,'\\`')}\`)">Copy email text</button>
-</div>` : ''}
- 
-<div class="card">
-  <div class="card-title">Event summary email <span class="tag tag-green">Send to yourself</span></div>
-  <div class="email-preview">${summaryEmail}</div>
-  <button class="btn btn-ghost btn-sm" onclick="copyText(\`${summaryEmail.replace(/`/g,'\\`')}\`)">Copy email text</button>
-</div>
- 
-<div class="nav">
-  <button class="btn btn-ghost" onclick="go(-1)">Back</button>
-  <button class="btn btn-primary" onclick="restart()">Plan a new event</button>
-</div>`;
+
+<div class="nav"><button class="btn btn-ghost" onclick="go(-1)">Back</button><button class="btn btn-primary" onclick="restart()">Plan a new event</button></div>`;}
+
+function render(){
+  if(!mode){app().innerHTML=renderEntry();return;}
+  if(mode==='std'){app().innerHTML=renderStd();return;}
+  app().innerHTML=renderEvent();
 }
- 
-// ── MAIN RENDER ───────────────────────────────────────────────────────────
-function render() {
-  if (!mode) { app().innerHTML = renderEntry(); return; }
-  if (mode === 'std') { app().innerHTML = renderStd(); return; }
-  app().innerHTML = renderEvent();
-}
- 
 render();
 </script>
 </body>
