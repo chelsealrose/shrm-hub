@@ -11,7 +11,6 @@
   --green:#3B6D11;--green-light:#EAF3DE;
   --amber:#EF9F27;--amber-light:#FAEEDA;--amber-dark:#854F0B;
   --red:#E24B4A;--red-light:#FCEBEB;--red-dark:#A32D2D;
-  --purple-light:#EEEDFE;--purple-dark:#3C3489;
   --border:#e2e2e2;--border-strong:#c8c8c8;
   --bg:#fff;--bg2:#f7f7f5;--text:#1a1a1a;--text2:#6b6b6b;
   --r-md:8px;--r-lg:12px;
@@ -48,6 +47,8 @@ textarea{resize:vertical;min-height:65px}
 .check-label{font-size:13px;color:var(--text)}
 .card{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.1rem 1.25rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 .card-title{font-size:15px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.func-group{margin-bottom:14px}
+.func-group-label{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
 .warn-box{background:var(--amber-light);border-left:3px solid var(--amber);border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 12px;font-size:13px;color:var(--amber-dark);margin-bottom:14px;line-height:1.5}
 .danger-box{background:var(--red-light);border-left:3px solid var(--red);border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 12px;font-size:13px;color:var(--red-dark);margin-bottom:14px;line-height:1.5}
 .success-box{background:var(--green-light);border-left:3px solid #639922;border-radius:0 var(--r-md) var(--r-md) 0;padding:9px 12px;font-size:13px;color:var(--green);margin-bottom:14px;line-height:1.5}
@@ -81,7 +82,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0}
 .sub-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);padding:12px;margin-bottom:10px;position:relative}
 .sub-card-label{font-size:11px;font-weight:600;color:var(--blue);margin-bottom:8px}
 .sub-card-remove{position:absolute;top:10px;right:10px;font-size:12px;color:var(--text2);cursor:pointer;padding:2px 8px;border:1px solid var(--border);border-radius:99px;background:var(--bg)}
-.sub-card-remove:hover{background:var(--red-light);color:var(--red-dark);border-color:#F09595}
+.sub-card-remove:hover{background:var(--red-light);color:var(--red-dark)}
 .session-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-bottom:8px}
 .session-hdr{display:flex;align-items:center;gap:9px;cursor:pointer}
 .session-hdr.open{margin-bottom:10px}
@@ -110,9 +111,19 @@ const ADMIN_EMAIL='admin@clevelandshrm.com';
 const VENUE_SHEET='https://docs.google.com/spreadsheets/PLACEHOLDER_VENUE';
 const SPONSOR_SHEET='https://docs.google.com/spreadsheets/PLACEHOLDER_SPONSORS';
 const SESSION_ITEMS=['Check-in & networking','Program/presentation','Q&A','Other (optional)'];
-const PDC_AREAS=['HR Expertise (HR Knowledge)','Interpersonal (Leadership & Navigation)','Interpersonal (Communication)','Interpersonal (Global & Cultural Effectiveness)','Interpersonal (Relationship Management)','Business (Business Acumen)','Business (Consultation)','Business (Critical Evaluation)','Business (Ethical Practice)'];
+const PDC_AREAS=[
+  'HR Expertise','Interpersonal (Leadership & Navigation)','Interpersonal (Communication)',
+  'Interpersonal (Global & Cultural Effectiveness)','Interpersonal (Relationship Management)',
+  'Business (Business Acumen)','Business (Consultation)','Business (Critical Evaluation)','Business (Ethical Practice)'
+];
+const FUNC_AREAS={
+  'People':['HR Strategy','Talent Acquisition','Employee Engagement & Retention','Learning & Development','Total Rewards'],
+  'Organization':['Structure of the HR Function','Org. Effectiveness & Development','Workforce Management','Employee & Labor Relations','Technology Management'],
+  'Workplace':['Managing a Global Workforce','Risk Management','Corporate Social Responsibility','U.S. Employment Law & Regulations']
+};
 const STEPS=9;
 
+// ── STATE ─────────────────────────────────────────────────────────────────
 let mode='',step=0;
 let d={
   creatorName:'',creatorEmail:'',eventType:'',
@@ -120,34 +131,41 @@ let d={
   programCalChecked:false,
   sessionBlocks:{},sessionHelpMode:false,totalDuration:'',
   venueName:'',venueAddress:'',venueParking:'',venuePrice:'',maxAttendees:'',
-  offerPDC:'',pdcAreas:[],shrmBasket:false,
+  offerPDC:'',pdcAreas:[],funcAreas:[],shrmBasket:false,
   hasFood:'',foodType:'',foodCostPer:'',caterWho:'',
+  miscCosts:[],
   speakerType:'',spkName:'',spkEmail:'',spkCompany:'',spkTitle:'',spkFee:'',spkFeeAmt:'',
   spkPhotoFile:null,spkBioFile:null,panelists:[],
   shortDesc:'',fullDesc:'',learningObj:'',
   estimatedAttendance:'',
   hasSponsors:'',sponsors:[],
-  stdName:'',stdEmail:'',stdTitle:'',stdSpeaker:'',stdDate:'',stdAmPm:'',stdType:'',
-  stdLocKnown:null,stdLocName:'',stdLocAddr:'',stdCalChecked:false,stdDone:false
+  // save the date
+  stdName:'',stdEmail:'',stdTitle:'',stdSpeaker:'',stdDate:'',
+  stdTimeMode:'',stdAmPm:'',stdStartTime:'',stdEndTime:'',
+  stdType:'',stdLocKnown:null,stdLocName:'',stdLocAddr:'',
+  stdCalChecked:false,stdDone:false
 };
 SESSION_ITEMS.forEach(s=>{d.sessionBlocks[s]={enabled:false,duration:''};});
 
 // ── EVENT ID ──────────────────────────────────────────────────────────────
-function makeEventId(title,date,prefix){
-  prefix=prefix||'SHRM';
-  const datePart=date?date.replace(/-/g,''):'NODATE';
+function makeId(title,date){
+  const dp=date?date.replace(/-/g,''):'NODATE';
   const slug=(title||'EVENT').toUpperCase().replace(/[^A-Z0-9\s]/g,'').trim().split(/\s+/).slice(0,3).join('-');
-  return`${prefix}-${datePart}-${slug}`;
+  return`SHRM-${dp}-${slug}`;
 }
-function eventId(){return makeEventId(d.eventTitle,d.eventDate);}
-function stdEventId(){return makeEventId(d.stdTitle,d.stdDate);}
-function eidHeader(id){return`Event ID: ${id}\n${'─'.repeat(40)}\n`;}
-function eidSubject(id,subj){return`[${id}] ${subj}`;}
+function eid(){return makeId(d.eventTitle,d.eventDate);}
+function sid(){return makeId(d.stdTitle,d.stdDate);}
+function eidHdr(id){return`Event ID: ${id}\n${'─'.repeat(40)}\n`;}
+function eidSubj(id,s){return`[${id}] ${s}`;}
+function eidBadge(id){return`<div class="eid-badge">🔖 ${id}</div>`;}
 
 // ── HELPERS ───────────────────────────────────────────────────────────────
 const app=()=>document.getElementById('app');
 function ck(){return`<svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+
+// KEY FIX: use data attributes + event delegation so inputs don't re-render on every keystroke
 function set(k,v){d[k]=v;}
+function setAndRender(k,v){d[k]=v;render();}
 function tog(k){d[k]=!d[k];render();}
 function togArr(k,v){const i=d[k].indexOf(v);if(i>-1)d[k].splice(i,1);else d[k].push(v);render();}
 function togSession(n){d.sessionBlocks[n].enabled=!d.sessionBlocks[n].enabled;render();}
@@ -155,9 +173,13 @@ function setSession(n,v){d.sessionBlocks[n].duration=v;updateTotal();}
 function addPanelist(){if(d.panelists.length<6)d.panelists.push({name:'',email:'',company:'',title:'',photoFile:null,bioFile:null});render();}
 function removePanelist(i){d.panelists.splice(i,1);render();}
 function setPanelist(i,k,v){d.panelists[i][k]=v;}
-function addSponsor(){d.sponsors.push({company:'',contactName:'',contactEmail:'',sponsoring:''});render();}
+function addSponsor(){d.sponsors.push({company:'',contactName:'',contactEmail:'',sponsoring:'',details:''});render();}
 function removeSponsor(i){d.sponsors.splice(i,1);render();}
 function setSponsor(i,k,v){d.sponsors[i][k]=v;}
+function addMisc(){d.miscCosts.push({label:'',amount:''});render();}
+function removeMisc(i){d.miscCosts.splice(i,1);render();}
+function setMisc(i,k,v){d.miscCosts[i][k]=v;}
+
 function totalMins(){if(d.sessionHelpMode)return parseInt(d.totalDuration)||0;let t=0;SESSION_ITEMS.forEach(s=>{const b=d.sessionBlocks[s];if(b.enabled)t+=parseInt(b.duration)||0;});return t;}
 function minsToStr(m){if(!m||m<=0)return'—';const h=Math.floor(m/60),mn=m%60;return h>0?(mn>0?`${h}h ${mn}m`:`${h}h`):`${mn}m`;}
 function updateTotal(){const el=document.getElementById('total-dur');if(el)el.textContent=minsToStr(totalMins());}
@@ -171,20 +193,31 @@ function startMode(m){mode=m;step=0;render();scroll();}
 function restart(){mode='';step=0;render();scroll();}
 function prog(){return`<div class="prog">${Array.from({length:STEPS},(_,i)=>`<div class="prog-dot${i<step?' done':i===step?' active':''}"></div>`).join('')}</div>`;}
 function eNav(nl){return`<div class="nav"><button class="btn btn-ghost" onclick="${step===0?'restart()':'go(-1)'}">${step===0?'Back to start':'Back'}</button><button class="btn btn-primary" onclick="go(1)">${nl||'Next'}</button></div>`;}
-function radioGroup(k,opts){return`<div class="radio-group">${opts.map(o=>`<div class="radio-btn${d[k]===o?' sel':''}" onclick="set('${k}','${o}');render()">${o}</div>`).join('')}</div>`;}
-function inp(k,ph,type,extra){type=type||'text';extra=extra||'';return`<input type="${type}" placeholder="${ph||''}" value="${(d[k]||'').toString().replace(/"/g,'&quot;')}" oninput="set('${k}',this.value)"${extra?' '+extra:''}>`;}
-function ta(k,ph){return`<textarea placeholder="${ph||''}" oninput="set('${k}',this.value)">${d[k]||''}</textarea>`;}
 function mailto(to,subj,body){return`mailto:${to||''}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;}
 
-function eidBadge(id){
-  return`<div class="eid-badge">🔖 Event ID: ${id}</div>`;
+// ── STABLE INPUT HELPERS (no re-render on keystroke) ─────────────────────
+// These render once; values are read from d[] at email-generation time.
+// Only radio/checkbox selections call render().
+function stableInp(k,ph,type,extra){
+  type=type||'text';extra=extra||'';
+  return`<input type="${type}" placeholder="${ph||''}" value="${(d[k]||'').toString().replace(/"/g,'&quot;')}" onchange="set('${k}',this.value)"${extra?' '+extra:''}>`;
+}
+function stableInpStd(k,ph,type){
+  type=type||'text';
+  return`<input type="${type}" placeholder="${ph||''}" value="${(d[k]||'').toString().replace(/"/g,'&quot;')}" onchange="set('${k}',this.value)">`;
+}
+function stableTa(k,ph){
+  return`<textarea placeholder="${ph||''}" onchange="set('${k}',this.value)">${d[k]||''}</textarea>`;
+}
+function radioGroup(k,opts){
+  return`<div class="radio-group">${opts.map(o=>`<div class="radio-btn${d[k]===o?' sel':''}" onclick="setAndRender('${k}','${o}')">${o}</div>`).join('')}</div>`;
 }
 
 // ── ENTRY ─────────────────────────────────────────────────────────────────
 function renderEntry(){return`<div class="entry-wrap">
 <div class="entry-logo">Cleveland SHRM</div>
 <div class="entry-title">Event planning tool</div>
-<div class="entry-sub">Your step-by-step guide for planning chapter events — from save the date to sponsor emails and cost summaries.</div>
+<div class="entry-sub">Your step-by-step guide for planning chapter events — from save the date to cost summaries and submission to Halle.</div>
 <div class="path-grid">
   <div class="path-card" onclick="startMode('std')"><div class="path-icon">📅</div><div class="path-name">Save the date</div><div class="path-desc">Quick form — title, date, time, speaker, and location.</div></div>
   <div class="path-card" onclick="startMode('event')"><div class="path-icon">📋</div><div class="path-name">Full event planning</div><div class="path-desc">Plan a complete event — venue, speakers, food, costs, sponsors, and more.</div></div>
@@ -194,33 +227,39 @@ function renderEntry(){return`<div class="entry-wrap">
 function renderStd(){
   if(d.stdDone)return stdDone();
   const isIP=d.stdType==='In-person';
-  const sid=stdEventId();
+  const curSid=sid();
   const showId=d.stdTitle&&d.stdDate;
   return`<div class="std-pill">Save the date</div>
 <h2>Save the date details</h2>
 <p class="sub">Fill in the details — a ready-to-send email will be generated.</p>
-${showId?eidBadge(sid):''}
+${showId?eidBadge(curSid):''}
 <div class="card">
-  <div class="field"><label>Your name</label><input type="text" placeholder="Jane Smith" value="${(d.stdName||'').replace(/"/g,'&quot;')}" oninput="set('stdName',this.value)"></div>
-  <div class="field"><label>Your email</label><input type="email" placeholder="jane@clevelandshrm.org" value="${(d.stdEmail||'').replace(/"/g,'&quot;')}" oninput="set('stdEmail',this.value)"></div>
+  <div class="field"><label>Your name</label>${stableInpStd('stdName','Jane Smith')}</div>
+  <div class="field"><label>Your email</label>${stableInpStd('stdEmail','jane@clevelandshrm.org','email')}</div>
   <hr>
-  <div class="field"><label>Event title</label><input type="text" placeholder="e.g. October Lunch & Learn" value="${(d.stdTitle||'').replace(/"/g,'&quot;')}" oninput="set('stdTitle',this.value);render()"></div>
-  <div class="field"><label>Speaker(s) <span class="opt-label">(optional)</span></label><input type="text" placeholder="e.g. Jane Smith, John Doe" value="${(d.stdSpeaker||'').replace(/"/g,'&quot;')}" oninput="set('stdSpeaker',this.value)"></div>
-  <div class="row2">
-    <div class="field"><label>Event date</label><input type="date" value="${d.stdDate||''}" oninput="set('stdDate',this.value);render()"></div>
-    <div class="field"><label>Time of day</label><div class="radio-group" style="margin-bottom:0">${['am','midday','pm'].map(o=>`<div class="radio-btn${d.stdAmPm===o?' sel':''}" onclick="set('stdAmPm','${o}');render()">${o}</div>`).join('')}</div></div>
+  <div class="field"><label>Event title</label><input type="text" placeholder="e.g. October Lunch & Learn" value="${(d.stdTitle||'').replace(/"/g,'&quot;')}" onchange="set('stdTitle',this.value)" oninput="set('stdTitle',this.value);document.getElementById('std-eid-badge').textContent='🔖 '+makeId(this.value,d.stdDate)"></div>
+  <div class="field"><label>Speaker(s) <span class="opt-label">(optional)</span></label>${stableInpStd('stdSpeaker','e.g. Jane Smith, John Doe')}</div>
+  <div class="field"><label>Event date</label><input type="date" value="${d.stdDate||''}" onchange="set('stdDate',this.value);document.getElementById('std-eid-badge').textContent='🔖 '+makeId(d.stdTitle,this.value)"></div>
+  <hr>
+  <div class="field"><label>Time</label></div>
+  <div class="radio-group">
+    <div class="radio-btn${d.stdTimeMode==='helper'?' sel':''}" onclick="setAndRender('stdTimeMode','helper')">Help me pick (AM / Midday / PM)</div>
+    <div class="radio-btn${d.stdTimeMode==='specific'?' sel':''}" onclick="setAndRender('stdTimeMode','specific')">I know the exact times</div>
   </div>
-  <div class="field"><label>Event type</label><div class="radio-group">${['Virtual','In-person'].map(o=>`<div class="radio-btn${d.stdType===o?' sel':''}" onclick="set('stdType','${o}');render()">${o}</div>`).join('')}</div></div>
+  ${d.stdTimeMode==='helper'?`<div class="radio-group">${['AM','Midday','PM'].map(o=>`<div class="radio-btn${d.stdAmPm===o?' sel':''}" onclick="setAndRender('stdAmPm','${o}')">${o}</div>`).join('')}</div>`:''}
+  ${d.stdTimeMode==='specific'?`<div class="row2"><div class="field"><label>Start time</label><input type="time" value="${d.stdStartTime||''}" onchange="set('stdStartTime',this.value)"></div><div class="field"><label>End time</label><input type="time" value="${d.stdEndTime||''}" onchange="set('stdEndTime',this.value)"></div></div>`:''}
+  <hr>
+  <div class="field"><label>Event type</label></div>
+  <div class="radio-group">${['Virtual','In-person'].map(o=>`<div class="radio-btn${d.stdType===o?' sel':''}" onclick="setAndRender('stdType','${o}')">${o}</div>`).join('')}</div>
   ${isIP?`<hr>
   <div class="field"><label>Location</label></div>
   <div class="radio-group">
-    <div class="radio-btn${d.stdLocKnown==='true'?' sel':''}" onclick="set('stdLocKnown','true');render()">Yes, I know it</div>
-    <div class="radio-btn${d.stdLocKnown==='false'?' sel':''}" onclick="set('stdLocKnown','false');window.open('${VENUE_SHEET}','_blank');render()">I don't know / help me</div>
+    <div class="radio-btn${d.stdLocKnown==='true'?' sel':''}" onclick="setAndRender('stdLocKnown','true')">Yes, I know it</div>
+    <div class="radio-btn${d.stdLocKnown==='false'?' sel':''}" onclick="setAndRender('stdLocKnown','false')">I don't know yet</div>
   </div>
-  ${d.stdLocKnown==='true'?`<div class="field"><label>Venue name</label><input type="text" placeholder="e.g. Huntington Convention Center" value="${(d.stdLocName||'').replace(/"/g,'&quot;')}" oninput="set('stdLocName',this.value)"></div>
-  <div class="field"><label>Address <span class="opt-label">(optional)</span></label><input type="text" placeholder="123 Main St, Cleveland, OH" value="${(d.stdLocAddr||'').replace(/"/g,'&quot;')}" oninput="set('stdLocAddr',this.value)"></div>`:''}
-  ${d.stdLocKnown==='false'?`<div class="warn-box">Venue resource sheet opened in a new tab. Use the button below to email the venue coordinator for help.</div>
-  <a class="btn btn-ghost btn-sm" href="${mailto('venues@clevelandshrm.org',eidSubject(sid,'Venue help needed'),eidHeader(sid)+'Hi,\n\nI need help finding a venue for an upcoming Cleveland SHRM event.\n\nEvent: '+(d.stdTitle||'[Title]')+'\nDate: '+(d.stdDate||'[Date]')+'\nOrganizer: '+(d.stdName||'')+ ' ('+(d.stdEmail||'')+')\n\nThank you!')}">Open venue help email</a>`:''}
+  ${d.stdLocKnown==='true'?`<div class="field"><label>Venue name</label>${stableInpStd('stdLocName','e.g. Huntington Convention Center')}</div>
+  <div class="field"><label>Address <span class="opt-label">(optional)</span></label>${stableInpStd('stdLocAddr','123 Main St, Cleveland, OH')}</div>`:''}
+  ${d.stdLocKnown==='false'?`<div class="info-box" style="margin-bottom:0">No problem — Halle will work with you on finding a venue. This will show as TBD in the save the date.</div>`:''}
   `:''}
   <hr>
   <div class="check-item${d.stdCalChecked?' sel':''}" onclick="tog('stdCalChecked')"><div class="chk">${ck()}</div><span class="check-label">Program calendar date has been checked for conflicts</span></div>
@@ -229,17 +268,19 @@ ${showId?eidBadge(sid):''}
 <div class="nav">
   <button class="btn btn-ghost" onclick="restart()">Back</button>
   <button class="btn btn-green" onclick="set('stdDone',true);render();scroll()">Generate save the date</button>
-</div>`;}
+</div>
+<div id="std-eid-badge" style="display:none">${showId?'🔖 '+curSid:''}</div>`;}
 
 function stdDone(){
-  const sid=stdEventId();
+  const curSid=sid();
+  const timeStr=d.stdTimeMode==='helper'?(d.stdAmPm||'TBD'):d.stdStartTime&&d.stdEndTime?(d.stdStartTime+' – '+d.stdEndTime):'TBD';
   const loc=d.stdType==='In-person'?(d.stdLocKnown==='true'?((d.stdLocName||'')+(d.stdLocAddr?', '+d.stdLocAddr:'')):'TBD — details to follow'):'';
   const spk=d.stdSpeaker?`\nFeaturing: ${d.stdSpeaker}`:'';
-  const subj=eidSubject(sid,`Save the date — ${d.stdTitle||'[Event Title]'}`);
-  const body=eidHeader(sid)+`Hi [Name],\n\nPlease save the date for an upcoming Cleveland SHRM event!\n\nEvent: ${d.stdTitle||'[Event Title]'}${spk}\nDate: ${d.stdDate||'[Date]'}\nTime: ${d.stdAmPm||''}\nFormat: ${d.stdType||''}${loc?'\nLocation: '+loc:''}\n\nMore details including registration and agenda will follow soon.\n\n${d.stdName||'[Your Name]'}\n${d.stdEmail||''}\nCleveland SHRM Chapter`;
+  const subj=eidSubj(curSid,`Save the date — ${d.stdTitle||'[Event Title]'}`);
+  const body=eidHdr(curSid)+`Hi [Name],\n\nPlease save the date for an upcoming Cleveland SHRM event!\n\nEvent: ${d.stdTitle||'[Event Title]'}${spk}\nDate: ${d.stdDate||'[Date]'}\nTime: ${timeStr}\nFormat: ${d.stdType||''}${loc?'\nLocation: '+loc:''}\n\nMore details including registration and agenda will follow soon.\n\n${d.stdName||'[Your Name]'}\n${d.stdEmail||''}\nCleveland SHRM Chapter`;
   return`<div class="std-pill">Save the date — complete</div>
 <h2>Ready to send!</h2><p class="sub">Your save-the-date email is ready below.</p>
-${eidBadge(sid)}
+${eidBadge(curSid)}
 <div class="card">
   <div class="card-title">Save the date email <span class="tag tag-green">One click to open</span></div>
   <div class="email-preview">${body}</div>
@@ -247,36 +288,36 @@ ${eidBadge(sid)}
 </div>
 <div class="nav"><button class="btn btn-ghost" onclick="set('stdDone',false);render()">Back</button><button class="btn btn-primary" onclick="restart()">Plan a new event</button></div>`;}
 
-// ── EVENT STEPS ───────────────────────────────────────────────────────────
+// ── FULL EVENT STEPS ──────────────────────────────────────────────────────
 function renderEvent(){const views=[eS0,eS1,eS2,eS3,eS4,eS5,eS6,eS7,eS8];return prog()+views[Math.min(step,8)]();}
 
 function eS0(){return`<div class="pill">Step 1 of 9 — Event basics</div>
 <h2>Let's plan your event</h2><p class="sub">Start with your contact info and event type.</p>
 <div class="card">
-  <div class="field"><label>Your name</label>${inp('creatorName','Jane Smith')}</div>
-  <div class="field"><label>Your email</label>${inp('creatorEmail','jane@clevelandshrm.org','email')}</div>
+  <div class="field"><label>Your name</label>${stableInp('creatorName','Jane Smith')}</div>
+  <div class="field"><label>Your email</label>${stableInp('creatorEmail','jane@clevelandshrm.org','email')}</div>
   <hr><div class="field"><label>Event type</label></div>${radioGroup('eventType',['Virtual','In-person'])}
 </div>${eNav()}`;}
 
 function eS1(){
   const warn6=isVirtual()&&within6Weeks();
-  const eid=eventId();
+  const curEid=eid();
   const showId=d.eventTitle&&d.eventDate;
   return`<div class="pill">Step 2 of 9 — Date &amp; time</div>
 <h2>Event date &amp; time</h2><p class="sub">Set your date and choose how you'd like to enter the time.</p>
-${showId?eidBadge(eid):''}
+${showId?eidBadge(curEid):''}
 <div class="card">
-  <div class="field"><label>Event title</label><input type="text" placeholder="e.g. October Lunch & Learn" value="${(d.eventTitle||'').replace(/"/g,'&quot;')}" oninput="set('eventTitle',this.value);render()"></div>
-  <div class="field"><label>Event date</label><input type="date" value="${d.eventDate||''}" oninput="set('eventDate',this.value);render()"></div>
+  <div class="field"><label>Event title</label><input type="text" placeholder="e.g. October Lunch & Learn" value="${(d.eventTitle||'').replace(/"/g,'&quot;')}" onchange="set('eventTitle',this.value)"></div>
+  <div class="field"><label>Event date</label><input type="date" value="${d.eventDate||''}" onchange="set('eventDate',this.value);render()"></div>
   ${warn6?`<div class="warn-box">⚠️ This date is within 6 weeks — outside the standard planning window for virtual events. You can still proceed, but please confirm with the programming committee.</div>`:''}
   <hr>
-  <div class="field"><label>How would you like to set the time?</label></div>
+  <div class="field"><label>Time</label></div>
   <div class="radio-group">
-    <div class="radio-btn${d.timeMode==='helper'?' sel':''}" onclick="set('timeMode','helper');render()">Help me pick (AM / Midday / PM)</div>
-    <div class="radio-btn${d.timeMode==='specific'?' sel':''}" onclick="set('timeMode','specific');render()">I know the exact times</div>
+    <div class="radio-btn${d.timeMode==='helper'?' sel':''}" onclick="setAndRender('timeMode','helper')">Help me pick (AM / Midday / PM)</div>
+    <div class="radio-btn${d.timeMode==='specific'?' sel':''}" onclick="setAndRender('timeMode','specific')">I know the exact times</div>
   </div>
   ${d.timeMode==='helper'?radioGroup('eventAmPm',['AM','Midday','PM']):''}
-  ${d.timeMode==='specific'?`<div class="row2"><div class="field"><label>Start time</label>${inp('startTime','','time')}</div><div class="field"><label>End time</label>${inp('endTime','','time')}</div></div>`:''}
+  ${d.timeMode==='specific'?`<div class="row2"><div class="field"><label>Start time</label><input type="time" value="${d.startTime||''}" onchange="set('startTime',this.value)"></div><div class="field"><label>End time</label><input type="time" value="${d.endTime||''}" onchange="set('endTime',this.value)"></div></div>`:''}
   <div class="check-item${d.programCalChecked?' sel':''}" onclick="tog('programCalChecked')"><div class="chk">${ck()}</div><span class="check-label">Program calendar date has been checked for conflicts</span></div>
   ${!d.programCalChecked?`<div class="warn-box" style="margin-top:10px">Please confirm the date is clear on the chapter program calendar.</div>`:''}
 </div>${eNav()}`;}
@@ -291,13 +332,13 @@ function eS2(){
     <span class="session-name">${name}</span>
     ${b.enabled&&mins>0?`<span class="session-dur">${minsToStr(mins)}</span>`:''}
   </div>
-  ${b.enabled&&!d.sessionHelpMode?`<div class="field" style="margin-top:10px;margin-bottom:0"><label>Duration (minutes)</label><input type="number" min="5" step="5" placeholder="e.g. 30" value="${b.duration||''}" oninput="setSession('${name}',this.value)"></div>`:''}
+  ${b.enabled&&!d.sessionHelpMode?`<div class="field" style="margin-top:10px;margin-bottom:0"><label>Duration (minutes)</label><input type="number" min="5" step="5" placeholder="e.g. 30" value="${b.duration||''}" onchange="setSession('${name}',this.value)"></div>`:''}
 </div>`;}).join('');
   return`<div class="pill">Step 3 of 9 — Schedule</div>
 <h2>Event schedule</h2><p class="sub">Select each session block and enter how long it will run in minutes.</p>
 <div class="card">
   <div class="check-item${d.sessionHelpMode?' sel':''}" onclick="tog('sessionHelpMode')" style="margin-bottom:12px"><div class="chk">${ck()}</div><span class="check-label">I need help — let me just enter a total event duration</span></div>
-  ${d.sessionHelpMode?`<div class="field"><label>Total event duration (minutes)</label>${inp('totalDuration','e.g. 90','number','min="0"')}</div>`:
+  ${d.sessionHelpMode?`<div class="field"><label>Total event duration (minutes)</label>${stableInp('totalDuration','e.g. 90','number','min="0"')}</div>`:
   `${blocks}<div class="total-bar"><span class="total-bar-label">Total program length</span><span class="total-bar-val" id="total-dur">${minsToStr(tot)}</span></div>
   ${tot>0?`<div class="info-box" style="margin-bottom:0">Use this total when confirming your event start and end times.</div>`:''}`}
 </div>${eNav()}`;}
@@ -306,32 +347,43 @@ function eS3(){
   if(isVirtual()){return`<div class="pill">Step 4 of 9 — Platform</div>
 <h2>Virtual platform</h2><p class="sub">Cleveland SHRM uses Zoom for all virtual events.</p>
 <div class="card">
-  <div class="success-box" style="margin-bottom:12px">Platform: <strong>Zoom</strong> — no additional setup needed here. The meeting link will be shared with registrants separately closer to the event.</div>
-  <div class="field"><label>Max attendees</label>${inp('maxAttendees','e.g. 80','number','min="1"')}</div>
+  <div class="success-box" style="margin-bottom:12px">Platform: <strong>Zoom</strong> — the meeting link will be shared with registrants separately closer to the event.</div>
+  <div class="field"><label>Max attendees</label>${stableInp('maxAttendees','e.g. 80','number','min="1"')}</div>
   <div class="info-box" style="margin-bottom:0">Standard virtual max is <strong>100 attendees</strong>. Contact the programming committee if you expect more.</div>
 </div>${eNav()}`;}
   return`<div class="pill">Step 4 of 9 — Venue</div>
 <h2>Venue details</h2><p class="sub">Confirm your in-person venue logistics.</p>
 <div class="card">
-  <div class="field"><label>Venue name</label>${inp('venueName','e.g. Huntington Convention Center')}</div>
-  <div class="field"><label>Address</label>${inp('venueAddress','123 Main St, Cleveland, OH')}</div>
-  <div class="field"><label>Parking details</label>${inp('venueParking','e.g. Free lot on north side')}</div>
-  <div class="field"><label>Venue rental cost ($)</label>${inp('venuePrice','0','number','min="0"')}</div>
+  <div class="field"><label>Venue name</label>${stableInp('venueName','e.g. Huntington Convention Center')}</div>
+  <div class="field"><label>Address</label>${stableInp('venueAddress','123 Main St, Cleveland, OH')}</div>
+  <div class="field"><label>Parking details</label>${stableInp('venueParking','e.g. Free lot on north side')}</div>
+  <div class="field"><label>Venue rental cost ($)</label>${stableInp('venuePrice','0','number','min="0"')}</div>
+  <div class="info-box" style="margin-bottom:10px">Need help finding a venue? Contact Halle at <strong>admin@clevelandshrm.com</strong> and she'll point you in the right direction. You can also browse the venue resource sheet below.</div>
   <a href="${VENUE_SHEET}" target="_blank" class="sheet-link">📄 Venue resource sheet</a>
 </div>
-<div class="card"><div class="field"><label>Max attendees (capacity)</label>${inp('maxAttendees','e.g. 60','number','min="1"')}</div></div>${eNav()}`;}
+<div class="card"><div class="field"><label>Max attendees (capacity)</label>${stableInp('maxAttendees','e.g. 60','number','min="1"')}</div></div>${eNav()}`;}
 
 function eS4(){
   const hasPDC=d.offerPDC==='Yes';
-  return`<div class="pill">Step 5 of 9 — SHRM PDCs</div>
+  const hasHRExpertise=d.pdcAreas.includes('HR Expertise');
+  return`<div class="pill">Step 5 of 9 — Learning Areas / SHRM BASK</div>
 <h2>Are you offering SHRM PDCs?</h2>
-<p class="sub">Professional Development Credits require selecting the applicable SHRM learning areas.</p>
+<p class="sub">Select yes to choose the applicable learning areas. If HR Expertise is selected, you'll also choose a functional area.</p>
 <div class="card">
   ${radioGroup('offerPDC',['Yes','No'])}
-  ${hasPDC?`<hr><div class="field"><label>Select all applicable learning areas</label></div>
+  ${hasPDC?`<hr>
+  <div class="field"><label>Learning areas (select all that apply)</label></div>
   ${PDC_AREAS.map(a=>`<div class="check-item${d.pdcAreas.includes(a)?' sel':''}" onclick="togArr('pdcAreas','${a}')"><div class="chk">${ck()}</div><span class="check-label">${a}</span></div>`).join('')}
-  ${d.pdcAreas.length===0?`<div class="warn-box" style="margin-top:8px">Please select at least one learning area.</div>`:`<div class="success-box" style="margin-top:8px">${d.pdcAreas.length} area${d.pdcAreas.length>1?'s':''} selected.</div>`}`
-  :`<div class="info-box" style="margin-bottom:0">No PDC documentation required for this event.</div>`}
+  ${d.pdcAreas.length===0?`<div class="warn-box" style="margin-top:8px">Please select at least one learning area.</div>`:`<div class="success-box" style="margin-top:8px">${d.pdcAreas.length} area${d.pdcAreas.length>1?'s':''} selected.</div>`}
+  ${hasHRExpertise?`<hr>
+  <div class="field" style="margin-top:4px"><label>HR Expertise — Functional Area <span class="tag tag-amber">required</span></label></div>
+  <p class="sub">Since HR Expertise is selected, please also choose the applicable functional area(s).</p>
+  ${Object.entries(FUNC_AREAS).map(([group,items])=>`<div class="func-group">
+    <div class="func-group-label">${group}</div>
+    ${items.map(a=>`<div class="check-item${d.funcAreas.includes(a)?' sel':''}" onclick="togArr('funcAreas','${a}')"><div class="chk">${ck()}</div><span class="check-label">${a}</span></div>`).join('')}
+  </div>`).join('')}
+  ${d.funcAreas.length===0?`<div class="warn-box">Please select at least one functional area.</div>`:''}`:''}
+  `:`<div class="info-box" style="margin-bottom:0">No PDC documentation required for this event.</div>`}
 </div>
 <div class="card"><div class="check-item${d.shrmBasket?' sel':''}" onclick="tog('shrmBasket')"><div class="chk">${ck()}</div><span class="check-label">This event includes a SHRM basket</span></div></div>${eNav()}`;}
 
@@ -343,14 +395,26 @@ function eS5(){
 <div class="card">
   ${radioGroup('hasFood',['Yes','No'])}
   ${d.hasFood==='Yes'?`<hr>${radioGroup('foodType',['Snacks & coffee','Meal'])}
-  ${d.foodType==='Meal'?`<div class="field"><label>Who will cater?</label>${inp('caterWho','Catering company or contact')}</div>
+  ${d.foodType==='Meal'?`<div class="field"><label>Who will cater?</label>${stableInp('caterWho','Catering company or contact')}</div>
   <a href="https://docs.google.com/spreadsheets/PLACEHOLDER_FOOD" target="_blank" class="sheet-link">🍽️ Food &amp; catering vendor sheet</a>`:''}
-  <div class="field" style="margin-top:8px"><label>Estimated food cost per person ($)</label>${inp('foodCostPer','0','number','min="0"')}</div>`:''}
+  <div class="field" style="margin-top:8px"><label>Estimated food cost per person ($)</label>${stableInp('foodCostPer','0','number','min="0"')}</div>`:''}
+</div>
+<div class="card">
+  <div class="card-title">Miscellaneous costs <span class="tag tag-blue">optional</span></div>
+  <p class="sub" style="margin-bottom:10px">Add any additional costs not covered above — A/V rental, printing, decorations, etc.</p>
+  ${d.miscCosts.map((m,i)=>`<div class="sub-card">
+    <div class="sub-card-label">Misc cost ${i+1}</div>
+    <span class="sub-card-remove" onclick="removeMisc(${i})">Remove</span>
+    <div class="row2">
+      <div class="field"><label>Description</label><input type="text" placeholder="e.g. A/V rental" value="${(m.label||'').replace(/"/g,'&quot;')}" onchange="setMisc(${i},'label',this.value)"></div>
+      <div class="field"><label>Amount ($)</label><input type="number" min="0" placeholder="0" value="${m.amount||''}" onchange="setMisc(${i},'amount',this.value)"></div>
+    </div>
+  </div>`).join('')}
+  <button class="btn btn-ghost btn-sm" onclick="addMisc()">+ Add misc cost</button>
 </div>${eNav()}`;}
 
 function eS6(){
   const isPanel=d.speakerType==='Panel';
-  const eid=eventId();
   return`<div class="pill">Step 7 of 9 — Speaker</div>
 <h2>Speaker details</h2>
 <p class="sub">Upload files if you have them — a bio &amp; photo request email will be generated on the summary page if not.</p>
@@ -358,8 +422,8 @@ function eS6(){
   ${radioGroup('speakerType',['Individual','Panel'])}
   ${d.speakerType?`<hr>
   <div class="card-title">Primary speaker</div>
-  <div class="row2"><div class="field"><label>Name</label>${inp('spkName','Speaker name')}</div><div class="field"><label>Email</label>${inp('spkEmail','speaker@email.com','email')}</div></div>
-  <div class="row2"><div class="field"><label>Company</label>${inp('spkCompany','Company')}</div><div class="field"><label>Title</label>${inp('spkTitle','Job title')}</div></div>
+  <div class="row2"><div class="field"><label>Name</label>${stableInp('spkName','Speaker name')}</div><div class="field"><label>Email</label>${stableInp('spkEmail','speaker@email.com','email')}</div></div>
+  <div class="row2"><div class="field"><label>Company</label>${stableInp('spkCompany','Company')}</div><div class="field"><label>Title</label>${stableInp('spkTitle','Job title')}</div></div>
   <div class="row2">
     <div class="field"><label>Photo <span class="opt-label">(optional)</span></label><input type="file" accept="image/*" onchange="set('spkPhotoFile',this.files[0])"></div>
     <div class="field"><label>Bio doc <span class="opt-label">(optional)</span></label><input type="file" accept=".pdf,.doc,.docx,.txt" onchange="set('spkBioFile',this.files[0])"></div>
@@ -367,15 +431,15 @@ function eS6(){
   <hr>
   <div class="field"><label>Speaker fee</label></div>
   ${radioGroup('spkFee',['Free','Paid'])}
-  ${d.spkFee==='Paid'?`<div class="field"><label>Fee amount ($)</label>${inp('spkFeeAmt','0','number','min="0"')}</div>
+  ${d.spkFee==='Paid'?`<div class="field"><label>Fee amount ($)</label>${stableInp('spkFeeAmt','0','number','min="0"')}</div>
   ${(parseFloat(d.spkFeeAmt)||0)>=1000?`<div class="danger-box">Fee is $1,000 or more — board approval required. An approval email will be generated on the summary page.</div>`:`<div class="success-box">Under $1,000 — no board approval needed.</div>`}`:''}
   ${isPanel?`<hr>
   <div class="card-title">Panelists <span class="tag tag-amber">up to 6</span></div>
   ${d.panelists.map((p,i)=>`<div class="sub-card">
     <div class="sub-card-label">Panelist ${i+1}</div>
     <span class="sub-card-remove" onclick="removePanelist(${i})">Remove</span>
-    <div class="row2"><div class="field"><label>Name</label><input type="text" placeholder="Name" value="${(p.name||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'name',this.value)"></div><div class="field"><label>Email</label><input type="email" placeholder="email@co.com" value="${(p.email||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'email',this.value)"></div></div>
-    <div class="row2"><div class="field"><label>Company</label><input type="text" placeholder="Company" value="${(p.company||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'company',this.value)"></div><div class="field"><label>Title</label><input type="text" placeholder="Title" value="${(p.title||'').replace(/"/g,'&quot;')}" oninput="setPanelist(${i},'title',this.value)"></div></div>
+    <div class="row2"><div class="field"><label>Name</label><input type="text" placeholder="Name" value="${(p.name||'').replace(/"/g,'&quot;')}" onchange="setPanelist(${i},'name',this.value)"></div><div class="field"><label>Email</label><input type="email" placeholder="email@co.com" value="${(p.email||'').replace(/"/g,'&quot;')}" onchange="setPanelist(${i},'email',this.value)"></div></div>
+    <div class="row2"><div class="field"><label>Company</label><input type="text" placeholder="Company" value="${(p.company||'').replace(/"/g,'&quot;')}" onchange="setPanelist(${i},'company',this.value)"></div><div class="field"><label>Title</label><input type="text" placeholder="Title" value="${(p.title||'').replace(/"/g,'&quot;')}" onchange="setPanelist(${i},'title',this.value)"></div></div>
     <div class="row2"><div class="field"><label>Photo <span class="opt-label">(optional)</span></label><input type="file" accept="image/*" onchange="setPanelist(${i},'photoFile',this.files[0])"></div><div class="field"><label>Bio doc <span class="opt-label">(optional)</span></label><input type="file" accept=".pdf,.doc,.docx,.txt" onchange="setPanelist(${i},'bioFile',this.files[0])"></div></div>
   </div>`).join('')}
   ${d.panelists.length<6?`<button class="btn btn-ghost btn-sm" onclick="addPanelist()" style="margin-top:4px">+ Add panelist</button>`:`<div class="info-box" style="margin-bottom:0">Maximum of 6 panelists reached.</div>`}`:''}
@@ -385,13 +449,13 @@ function eS6(){
 function eS7(){return`<div class="pill">Step 8 of 9 — Descriptions</div>
 <h2>Event descriptions</h2><p class="sub">These go on the website, email, and marketing materials.</p>
 <div class="card">
-  <div class="field"><label>Short description <span class="tag tag-blue">under 500 words</span></label>${ta('shortDesc','Brief summary for calendar listings...')}</div>
-  <div class="field"><label>Full description <span class="tag tag-blue">500+ words</span></label>${ta('fullDesc','Detailed description for the website...')}</div>
-  <div class="field"><label>Learning objectives <span class="tag tag-amber">required — at least 3</span></label>${ta('learningObj','1. Attendees will be able to...\n2.\n3.')}</div>
+  <div class="field"><label>Short description <span class="tag tag-blue">under 500 words</span></label>${stableTa('shortDesc','Brief summary for calendar listings...')}</div>
+  <div class="field"><label>Full description <span class="tag tag-blue">500+ words</span></label>${stableTa('fullDesc','Detailed description for the website...')}</div>
+  <div class="field"><label>Learning objectives <span class="tag tag-amber">required — at least 3</span></label>${stableTa('learningObj','1. Attendees will be able to...\n2.\n3.')}</div>
 </div>${eNav('View summary')}`;}
 
 function eS8(){
-  const eid=eventId();
+  const curEid=eid();
   const att=parseInt(d.estimatedAttendance)||0;
   const maxAtt=parseInt(d.maxAttendees)||0;
   const calcAtt=att||(maxAtt>0?Math.round(maxAtt*0.6):0);
@@ -399,42 +463,43 @@ function eS8(){
   const venue=parseFloat(d.venuePrice)||0;
   const spkFee=d.spkFee==='Paid'?(parseFloat(d.spkFeeAmt)||0):0;
   const foodTotal=isVirtual()?0:food*calcAtt;
-  const totalCost=foodTotal+venue+spkFee;
+  const miscTotal=d.miscCosts.reduce((s,m)=>s+(parseFloat(m.amount)||0),0);
+  const totalCost=foodTotal+venue+spkFee+miscTotal;
   const costPer=calcAtt>0?totalCost/calcAtt:0;
   const needsApproval=d.spkFee==='Paid'&&spkFee>=1000;
   const allSpeakers=[{name:d.spkName,email:d.spkEmail,title:d.spkTitle,company:d.spkCompany},...d.panelists.map(p=>({name:p.name,email:p.email,title:p.title,company:p.company}))].filter(s=>s.name);
   const sessionSummary=d.sessionHelpMode?`  Total duration: ${d.totalDuration||'—'} minutes`:SESSION_ITEMS.filter(s=>d.sessionBlocks[s].enabled).map(s=>`  ${s}: ${d.sessionBlocks[s].duration||'—'} min`).join('\n')||'  Not entered';
+  const timeStr=d.timeMode==='helper'?(d.eventAmPm||'TBD'):d.startTime&&d.endTime?(d.startTime+' – '+d.endTime):'TBD';
 
-  const bioSubj=eidSubject(eid,`Bio & headshot request — ${d.eventTitle||'[Event Title]'}`);
-  const bioBody=eidHeader(eid)+`Hi [Speaker Name],\n\nThank you for agreeing to ${d.speakerType==='Panel'?'participate in the panel':'speak'} at our upcoming Cleveland SHRM event, "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.\n\nCould you please send us:\n• A professional headshot (high resolution)\n• A brief bio (150-200 words)\n• Your title and company\n\nPlease reply by [DATE].\n\n${d.creatorName||'[Your Name]'}\nCleveland SHRM`;
+  const bioSubj=eidSubj(curEid,`Bio & headshot request — ${d.eventTitle||'[Event Title]'}`);
+  const bioBody=eidHdr(curEid)+`Hi [Speaker Name],\n\nThank you for agreeing to ${d.speakerType==='Panel'?'participate in the panel':'speak'} at our upcoming Cleveland SHRM event, "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.\n\nCould you please send us:\n• A professional headshot (high resolution)\n• A brief bio (150-200 words)\n• Your title and company\n\nPlease reply by [DATE].\n\n${d.creatorName||'[Your Name]'}\nCleveland SHRM`;
 
-  const approvalSubj=eidSubject(eid,`Board approval needed — speaker fee`);
-  const approvalBody=eidHeader(eid)+`Hi [Board Member],\n\nA speaker fee of ${fmt(spkFee)} has been entered for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.\n\nPer chapter policy, fees of $1,000 or more require board approval.\n\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||''})\nSpeaker: ${d.spkName||'[Name]'} — ${d.spkTitle||''} at ${d.spkCompany||''}\n\nPlease reply to approve.\n\nCleveland SHRM Event Planning Tool`;
+  const approvalSubj=eidSubj(curEid,'Board approval needed — speaker fee');
+  const approvalBody=eidHdr(curEid)+`Hi [Board Member],\n\nA speaker fee of ${fmt(spkFee)} has been entered for "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'}.\n\nPer chapter policy, fees of $1,000 or more require board approval.\n\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||''})\nSpeaker: ${d.spkName||'[Name]'} — ${d.spkTitle||''} at ${d.spkCompany||''}\n\nPlease reply to approve.\n\nCleveland SHRM Event Planning Tool`;
 
-  const summarySubj=eidSubject(eid,`Event planning submission — ${d.eventTitle||'[Event Title]'}`);
-  const summaryBody=eidHeader(eid)+`Hi Halle,\n\nHere is a new event planning submission for your review.\n\n── EVENT DETAILS ──\nTitle: ${d.eventTitle||'—'}\nDate: ${d.eventDate||'—'}\nTime: ${d.timeMode==='helper'?(d.eventAmPm||'—'):(d.startTime||'—')+' – '+(d.endTime||'—')}\nFormat: ${d.eventType||'—'}\nLocation: ${isVirtual()?'Zoom (virtual)':((d.venueName||'—')+', '+(d.venueAddress||''))}\nMax capacity: ${d.maxAttendees||'—'}\nSHRM PDCs: ${d.offerPDC==='Yes'?'Yes — '+d.pdcAreas.join(', '):'No'}\nFood: ${isVirtual()?'N/A (virtual)':(d.hasFood==='Yes'?(d.foodType||'Yes'):'No')}\n\n── SCHEDULE ──\n${sessionSummary}\nTotal: ${minsToStr(totalMins())}\n\n── SPEAKER ──\nFormat: ${d.speakerType||'—'}\nPrimary: ${d.spkName||'—'} (${d.spkTitle||''} at ${d.spkCompany||''})\nEmail: ${d.spkEmail||'—'}\nFee: ${d.spkFee==='Paid'?fmt(spkFee):'Free'}\n${d.panelists.length>0?'Panelists:\n'+d.panelists.map((p,i)=>`  ${i+1}. ${p.name||'—'} — ${p.title||''} at ${p.company||''} (${p.email||''})`).join('\n'):''}\n\n── COST SUMMARY ──\n${!isVirtual()&&d.hasFood==='Yes'?`Food (${fmt2(food)} x ${calcAtt} people): ${fmt(foodTotal)}\n`:''}${!isVirtual()&&venue>0?`Venue rental: ${fmt(venue)}\n`:''}${spkFee>0?`Speaker fee: ${fmt(spkFee)}\n`:''}Total estimated cost: ${fmt(totalCost)}\nAttendee estimate: ${calcAtt} (${att?'entered directly':'60% of '+maxAtt+' max capacity'})\nCost per person: ${calcAtt>0?fmt2(costPer):'—'}\n\n── SPONSORS ──\n${d.hasSponsors==='Yes'&&d.sponsors.length>0?d.sponsors.map(s=>`  ${s.company||'—'}: ${s.sponsoring||'—'} (${s.contactName||''} / ${s.contactEmail||''})`).join('\n'):(d.hasSponsors==='help'?'Sponsor help requested':'No sponsors')}\n\n── DESCRIPTIONS ──\nShort: ${d.shortDesc||'—'}\nLearning objectives:\n${d.learningObj||'—'}\n\nSubmitted by: ${d.creatorName||'—'} (${d.creatorEmail||'—'})\nCleveland SHRM Event Planning Tool`;
+  const miscSummary=d.miscCosts.filter(m=>m.label||m.amount).map(m=>`  ${m.label||'Misc'}: ${fmt(parseFloat(m.amount)||0)}`).join('\n');
+  const summarySubj=eidSubj(curEid,`Event planning submission — ${d.eventTitle||'[Event Title]'}`);
+  const summaryBody=eidHdr(curEid)+`Hi Halle,\n\nHere is a new event planning submission for your review.\n\n── EVENT DETAILS ──\nTitle: ${d.eventTitle||'—'}\nDate: ${d.eventDate||'—'}\nTime: ${timeStr}\nFormat: ${d.eventType||'—'}\nLocation: ${isVirtual()?'Zoom (virtual)':((d.venueName||'—')+', '+(d.venueAddress||''))}\nMax capacity: ${d.maxAttendees||'—'}\nPDCs offered: ${d.offerPDC==='Yes'?'Yes':'No'}${d.offerPDC==='Yes'?'\nLearning areas: '+d.pdcAreas.join(', '):''}\n${d.funcAreas.length>0?'Functional areas: '+d.funcAreas.join(', ')+'\n':''}\nFood: ${isVirtual()?'N/A (virtual)':(d.hasFood==='Yes'?(d.foodType||'Yes'):'No')}\n\n── SCHEDULE ──\n${sessionSummary}\nTotal: ${minsToStr(totalMins())}\n\n── SPEAKER ──\nFormat: ${d.speakerType||'—'}\nPrimary: ${d.spkName||'—'} (${d.spkTitle||''} at ${d.spkCompany||''})\nEmail: ${d.spkEmail||'—'}\nFee: ${d.spkFee==='Paid'?fmt(spkFee):'Free'}\n${d.panelists.length>0?'Panelists:\n'+d.panelists.map((p,i)=>`  ${i+1}. ${p.name||'—'} — ${p.title||''} at ${p.company||''} (${p.email||''})`).join('\n'):''}\n\n── COST SUMMARY ──\n${!isVirtual()&&d.hasFood==='Yes'?`Food (${fmt2(food)} x ${calcAtt} people): ${fmt(foodTotal)}\n`:''}${!isVirtual()&&venue>0?`Venue rental: ${fmt(venue)}\n`:''}${spkFee>0?`Speaker fee: ${fmt(spkFee)}\n`:''}${miscSummary?'Misc costs:\n'+miscSummary+'\n':''}Total estimated cost: ${fmt(totalCost)}\nAttendee estimate: ${calcAtt} (${att?'entered directly':'60% of '+maxAtt+' max capacity'})\nCost per person: ${calcAtt>0?fmt2(costPer):'—'}\n\n── SPONSORS ──\n${d.hasSponsors==='Yes'&&d.sponsors.length>0?d.sponsors.map(s=>`  ${s.company||'—'}: ${s.details||s.sponsoring||'—'} (${s.contactName||''} / ${s.contactEmail||''})`).join('\n'):(d.hasSponsors==='help'?'Sponsor help requested':'No sponsors')}\n\n── DESCRIPTIONS ──\nShort: ${d.shortDesc||'—'}\nLearning objectives:\n${d.learningObj||'—'}\n\nSubmitted by: ${d.creatorName||'—'} (${d.creatorEmail||'—'})\nCleveland SHRM Event Planning Tool`;
 
-  const sponsorHelpSubj=eidSubject(eid,'Sponsor help needed');
-  const sponsorHelpBody=eidHeader(eid)+`Hi,\n\nThe organizer of "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'} is looking for sponsor assistance.\n\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})\n\nPlease reach out to connect them with potential sponsors.\n\nCleveland SHRM Event Planning Tool`;
-
-  const pdcSubj=eidSubject(eid,'SHRM PDC notification');
-  const pdcBody=eidHeader(eid)+`Hi [PDC Coordinator],\n\nThe following event has been submitted offering SHRM PDCs and requires the functional report to be completed.\n\nEvent: ${d.eventTitle||'[Event Title]'}\nDate: ${d.eventDate||'[Date]'}\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})\nLearning areas: ${d.pdcAreas.join(', ')||'[See submission]'}\n\nThank you,\nCleveland SHRM Event Planning Tool`;
+  const sponsorHelpSubj=eidSubj(curEid,'Sponsor help needed');
+  const sponsorHelpBody=eidHdr(curEid)+`Hi,\n\nThe organizer of "${d.eventTitle||'[Event Title]'}" on ${d.eventDate||'[Date]'} is looking for sponsor assistance.\n\nOrganizer: ${d.creatorName||'[Name]'} (${d.creatorEmail||'[Email]'})\n\nThis will be noted in the event summary sent to Halle.\n\nCleveland SHRM Event Planning Tool`;
 
   return`<div class="pill">Step 9 of 9 — Summary</div>
 <h2>Event summary</h2>
 <p class="sub">Review your cost breakdown, generate your emails, and submit to Halle.</p>
-${eidBadge(eid)}
-<div class="info-box">Every email below includes the Event ID <strong>${eid}</strong> so all correspondence can be easily tracked together.</div>
+${eidBadge(curEid)}
+<div class="info-box">Every email below includes the Event ID <strong>${curEid}</strong> so all correspondence can be easily tracked together.</div>
 
 ${needsApproval?`<div class="danger-box">⚠️ Board approval required — speaker fee of ${fmt(spkFee)} exceeds $1,000. Send the approval email below before confirming with the speaker.</div>`:''}
 
 <div class="card">
   <div class="card-title">Cost summary</div>
-  <div class="field"><label>Estimated attendance <span class="tag tag-amber">optional — overrides 60% of max</span></label>${inp('estimatedAttendance','Leave blank to use 60% of max capacity','number','min="1"')}</div>
+  <div class="field"><label>Estimated attendance <span class="tag tag-amber">optional — overrides 60% of max</span></label>${stableInp('estimatedAttendance','Leave blank to use 60% of max capacity','number','min="1"')}</div>
   ${calcAtt>0?`<table class="price-table">
     ${!isVirtual()&&venue>0?`<tr><td>Venue rental</td><td>${fmt(venue)}</td></tr>`:''}
     ${!isVirtual()&&d.hasFood==='Yes'?`<tr><td>Food (${fmt2(food)} × ${calcAtt} people)</td><td>${fmt(foodTotal)}</td></tr>`:''}
     ${spkFee>0?`<tr><td>Speaker fee</td><td>${fmt(spkFee)}</td></tr>`:''}
+    ${d.miscCosts.filter(m=>m.label||m.amount).map(m=>`<tr><td>${m.label||'Misc'}</td><td>${fmt(parseFloat(m.amount)||0)}</td></tr>`).join('')}
     <tr class="total-row"><td>Total estimated cost</td><td>${fmt(totalCost)}</td></tr>
     <tr><td style="color:var(--text2)">Cost per person</td><td>${fmt2(costPer)}</td></tr>
   </table>
@@ -445,31 +510,25 @@ ${needsApproval?`<div class="danger-box">⚠️ Board approval required — spea
 <div class="card">
   <div class="card-title">Sponsors</div>
   <div class="radio-group">
-    <div class="radio-btn${d.hasSponsors==='Yes'?' sel':''}" onclick="set('hasSponsors','Yes');render()">Yes</div>
-    <div class="radio-btn${d.hasSponsors==='No'?' sel':''}" onclick="set('hasSponsors','No');render()">No</div>
-    <div class="radio-btn${d.hasSponsors==='help'?' sel':''}" onclick="set('hasSponsors','help');window.open('${SPONSOR_SHEET}','_blank');render()">Please help find one</div>
+    <div class="radio-btn${d.hasSponsors==='Yes'?' sel':''}" onclick="setAndRender('hasSponsors','Yes')">Yes</div>
+    <div class="radio-btn${d.hasSponsors==='No'?' sel':''}" onclick="setAndRender('hasSponsors','No')">No</div>
+    <div class="radio-btn${d.hasSponsors==='help'?' sel':''}" onclick="setAndRender('hasSponsors','help');window.open('${SPONSOR_SHEET}','_blank')">Please help find one</div>
   </div>
   ${d.hasSponsors==='Yes'?`${d.sponsors.map((sp,i)=>`<div class="sub-card">
     <div class="sub-card-label">Sponsor ${i+1}</div>
     <span class="sub-card-remove" onclick="removeSponsor(${i})">Remove</span>
-    <div class="row2"><div class="field"><label>Company</label><input type="text" placeholder="Acme Corp" value="${(sp.company||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'company',this.value)"></div><div class="field"><label>Contact name</label><input type="text" placeholder="Contact" value="${(sp.contactName||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'contactName',this.value)"></div></div>
-    <div class="row2"><div class="field"><label>Email</label><input type="email" placeholder="contact@co.com" value="${(sp.contactEmail||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'contactEmail',this.value)"></div><div class="field"><label>Sponsoring what?</label><input type="text" placeholder="e.g. Food, AV" value="${(sp.sponsoring||'').replace(/"/g,'&quot;')}" oninput="setSponsor(${i},'sponsoring',this.value)"></div></div>
+    <div class="row2"><div class="field"><label>Company</label><input type="text" placeholder="Acme Corp" value="${(sp.company||'').replace(/"/g,'&quot;')}" onchange="setSponsor(${i},'company',this.value)"></div><div class="field"><label>Contact name</label><input type="text" placeholder="Contact" value="${(sp.contactName||'').replace(/"/g,'&quot;')}" onchange="setSponsor(${i},'contactName',this.value)"></div></div>
+    <div class="field"><label>Details (pricing, what they're sponsoring — e.g. space, food)</label><input type="text" placeholder="e.g. Sponsoring food, $500 contribution" value="${(sp.details||'').replace(/"/g,'&quot;')}" onchange="setSponsor(${i},'details',this.value)"></div>
+    <div class="field"><label>Contact email</label><input type="email" placeholder="contact@co.com" value="${(sp.contactEmail||'').replace(/"/g,'&quot;')}" onchange="setSponsor(${i},'contactEmail',this.value)"></div>
   </div>`).join('')}
   <button class="btn btn-ghost btn-sm" onclick="addSponsor()" style="margin-bottom:4px">+ Add sponsor</button>`:''}
-  ${d.hasSponsors==='help'?`<div class="warn-box" style="margin-top:8px">The sponsor resource sheet has been opened in a new tab. Use the button below to notify the sponsor coordinator.</div>
-  <a class="btn btn-ghost btn-sm" href="${mailto('',sponsorHelpSubj,sponsorHelpBody)}" style="margin-top:4px">Open sponsor help email</a>`:''}
+  ${d.hasSponsors==='help'?`<div class="info-box" style="margin-top:8px;margin-bottom:0">The sponsor resource sheet has been opened in a new tab. Halle will see "sponsor help requested" in your submission and reach out to assist.</div>`:''}
 </div>
 
 ${d.spkName?`<div class="card">
   <div class="card-title">Bio &amp; photo request <span class="tag tag-blue">Send to speaker(s)</span></div>
   <div class="email-preview">${bioBody}</div>
   <a class="btn btn-ghost btn-sm" href="${mailto(allSpeakers.map(s=>s.email).filter(Boolean).join(','),bioSubj,bioBody)}">Open bio request email</a>
-</div>`:''}
-
-${d.offerPDC==='Yes'?`<div class="card">
-  <div class="card-title">PDC coordinator notification <span class="tag tag-blue">Send to PDC coordinator</span></div>
-  <div class="email-preview">${pdcBody}</div>
-  <a class="btn btn-ghost btn-sm" href="${mailto('',pdcSubj,pdcBody)}">Open PDC notification email</a>
 </div>`:''}
 
 ${needsApproval?`<div class="card">
